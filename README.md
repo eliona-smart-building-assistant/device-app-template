@@ -53,10 +53,27 @@ The app provides its own API to access configuration data and other functions. T
 **Generation**: to generate api server stub see Generation section below.
 
 
-### Eliona ###
+### Eliona assets ###
 
-<mark>Todo: Describe all the data the app writes to eliona</mark>
+This app creates Eliona asset types and attribute sets during initialization.
 
+The data is written for each KentixONE device, structured into different subtypes of Elinoa assets. The following subtypes are defined:
+
+- `Info`: Static data which provides information about a device like address and firmware info.
+- `Status`: Device status information, like battery level.
+- `Input`: Current locations and values reported by Kontakt.io sensors.
+
+### Continuous asset creation ###
+
+Assets for all devices connected to the Kontakt.io account are created automatically when the configuration is added.
+
+To select which assets to create, a filter could be specified in config. The schema of the filter is defined in the `openapi.yaml` file.
+
+Possible filter parameters are the field names in the `kontaktio.Device` struct.
+
+### Dashboard ###
+
+An example dashboard meant for a quick start or showcasing the apps abilities can be obtained by accessing the dashboard endpoint defined in the `openapi.yaml` file.
 
 ## Tools
 
