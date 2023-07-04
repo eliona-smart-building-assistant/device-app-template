@@ -15,11 +15,8 @@ type Configuration struct {
 	// Internal identifier for the configured API (created automatically).
 	Id *int64 `json:"id,omitempty"`
 
-	// IP or hostname of the API
-	ApiAddress string `json:"apiAddress,omitempty"`
-
-	// API key
-	ApiKey string `json:"apiKey,omitempty"`
+	// There should be things like API address, access keys and so on.
+	ApiAccessChangeMe string `json:"apiAccessChangeMe,omitempty"`
 
 	// Flag to enable or disable fetching from this API
 	Enable *bool `json:"enable,omitempty"`

@@ -24,8 +24,8 @@ import (
 )
 
 type ExampleDevice struct {
-	ID   string
-	Name string
+	ID   string `eliona:"id" subtype:"info"`
+	Name string `eliona:"name,filterable" subtype:"info"`
 }
 
 func GetTags(config apiserver.Configuration) ([]ExampleDevice, error) {

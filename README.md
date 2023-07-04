@@ -33,13 +33,13 @@ This initialization can be handled by the `reset.sql` script.
 
 ### Database tables ###
 
-<mark>Todo: Describe the database objects the app needs for configuration</mark>
-
-<mark>Todo: Decide if the app uses its own data and which data should be accessible from outside the app. This is always the case with configuration data. If so, the app needs its own API server to provide access to this data. To define the API use an openapi.yaml file and generators to build the server stub.</mark>
+<mark>Todo: Describe other tables if the app needs them.</mark>
 
 The app requires configuration data that remains in the database. To do this, the app creates its own database schema `template` during initialization. To modify and handle the configuration data the app provides an API access. Have a look at the [API specification](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/app-template/develop/openapi.yaml) how the configuration tables should be used.
 
-- `template.example_table`: <mark>Todo: Describe the database table in short.</mark>
+- `template.configuration`: Contains configuration of the app. Editable through the API.
+
+- `template.asset`: Provides asset mapping. Maps broker's asset IDs to Eliona asset IDs.
 
 **Generation**: to generate access method to database see Generation section below.
 
@@ -67,11 +67,13 @@ The data is written for each KentixONE device, structured into different subtype
 
 ### Continuous asset creation ###
 
-Assets for all devices connected to the Kontakt.io account are created automatically when the configuration is added.
+Assets for all devices connected to the Template account are created automatically when the configuration is added.
 
 To select which assets to create, a filter could be specified in config. The schema of the filter is defined in the `openapi.yaml` file.
 
-Possible filter parameters are the field names in the `kontaktio.Device` struct.
+Possible filter parameters are defined in the structs in `broker.go` and marked with `eliona:"attribute_name,filterable"` field tag.
+
+To avoid conflicts, the Global Asset Identifier is a manufacturer's ID prefixed with asset type name as a namespace.
 
 ### Dashboard ###
 
@@ -96,3 +98,7 @@ For the database access [SQLBoiler](https://github.com/volatiletech/sqlboiler) i
 .\generate-db.cmd # Windows
 ./generate-db.sh # Linux
 ```
+
+### Generate asset type descriptions ###
+
+For generating asset type descriptions from field-tag-annotated structs, [asse-from-struct tool](https://github.com/eliona-smart-building-assistant/dev-utilities) can be used.

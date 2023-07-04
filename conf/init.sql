@@ -15,6 +15,27 @@
 
 create schema if not exists template;
 
---
--- Todo: create tables and database objects necessary for this app like tables persisting configuration
---
+-- Should be editable by eliona frontend.
+create table if not exists template.configuration
+(
+	id                   bigserial primary key,
+	api_access_change_me text not null,
+	refresh_interval     integer not null default 60,
+	request_timeout      integer not null default 120,
+	asset_filter         json,
+	active               boolean default false,
+	enable               boolean default false,
+	project_ids          text[]
+);
+
+create table if not exists template.asset
+(
+	id               bigserial primary key,
+	configuration_id bigserial not null references template.configuration(id),
+	project_id       text      not null,
+	global_asset_id  text      not null,
+	asset_id         integer
+);
+
+-- Makes the new objects available for all other init steps
+commit;
