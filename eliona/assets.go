@@ -15,6 +15,11 @@
 
 package eliona
 
+type Asset interface {
+	AssetType() string
+	Id() string
+}
+
 //
 // Todo: Define anything for eliona like writing assets or heap data
 //
