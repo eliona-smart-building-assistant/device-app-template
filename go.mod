@@ -6,9 +6,11 @@ require (
 	github.com/eliona-smart-building-assistant/app-integration-tests v0.0.5
 	github.com/eliona-smart-building-assistant/go-eliona v1.9.7
 	github.com/eliona-smart-building-assistant/go-utils v1.0.30
+	github.com/friendsofgo/errors v0.9.2
 	github.com/gorilla/mux v1.8.0
 	github.com/volatiletech/null/v8 v8.1.2
 	github.com/volatiletech/sqlboiler/v4 v4.14.2
+	github.com/volatiletech/strmangle v0.0.5
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -19,7 +21,7 @@ replace github.com/ericlagergren/decimal => github.com/ericlagergren/decimal v0.
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/eliona-smart-building-assistant/go-eliona-api-client/v2 v2.4.14 // indirect
-	github.com/friendsofgo/errors v0.9.2 // indirect
+	github.com/ericlagergren/decimal v0.0.0-20211103172832-aca2edc11f73 // indirect
 	github.com/gofrs/uuid v4.2.0+incompatible // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.14.0 // indirect
@@ -36,7 +38,6 @@ require (
 	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/volatiletech/inflect v0.0.1 // indirect
 	github.com/volatiletech/randomize v0.0.1 // indirect
-	github.com/volatiletech/strmangle v0.0.5 // indirect
 	golang.org/x/crypto v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
