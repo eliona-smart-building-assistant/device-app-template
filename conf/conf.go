@@ -46,7 +46,7 @@ func GetConfig(ctx context.Context, configID int64) (*apiserver.Configuration, e
 		appdb.ConfigurationWhere.ID.EQ(configID),
 	).OneG(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("fetching config from database")
+		return nil, fmt.Errorf("fetching config from database: %v", err)
 	}
 	if dbConfig == nil {
 		return nil, ErrBadRequest
@@ -59,11 +59,16 @@ func GetConfig(ctx context.Context, configID int64) (*apiserver.Configuration, e
 }
 
 func DeleteConfig(ctx context.Context, configID int64) error {
+	if _, err := appdb.Assets(
+		appdb.AssetWhere.ConfigurationID.EQ(configID),
+	).DeleteAllG(ctx); err != nil {
+		return fmt.Errorf("deleting assets from database: %v", err)
+	}
 	count, err := appdb.Configurations(
 		appdb.ConfigurationWhere.ID.EQ(configID),
 	).DeleteAllG(ctx)
 	if err != nil {
-		return fmt.Errorf("fetching config from database")
+		return fmt.Errorf("deleting config from database: %v", err)
 	}
 	if count > 1 {
 		return fmt.Errorf("shouldn't happen: deleted more (%v) configs by ID", count)
