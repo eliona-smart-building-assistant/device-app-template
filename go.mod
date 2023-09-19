@@ -3,9 +3,9 @@ module template
 go 1.20
 
 require (
-	github.com/eliona-smart-building-assistant/app-integration-tests v0.0.5
-	github.com/eliona-smart-building-assistant/go-eliona v1.9.9
-	github.com/eliona-smart-building-assistant/go-utils v1.0.30
+	github.com/eliona-smart-building-assistant/app-integration-tests v1.0.0
+	github.com/eliona-smart-building-assistant/go-eliona v1.9.16
+	github.com/eliona-smart-building-assistant/go-utils v1.0.38
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gorilla/mux v1.8.0
 	github.com/volatiletech/null/v8 v8.1.2
@@ -20,9 +20,10 @@ replace github.com/ericlagergren/decimal => github.com/ericlagergren/decimal v0.
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/eliona-smart-building-assistant/go-eliona-api-client/v2 v2.4.20 // indirect
+	github.com/eliona-smart-building-assistant/go-eliona-api-client/v2 v2.5.3-2 // indirect
 	github.com/ericlagergren/decimal v0.0.0-20211103172832-aca2edc11f73 // indirect
 	github.com/gofrs/uuid v4.2.0+incompatible // indirect
+	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.14.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect

@@ -42,7 +42,7 @@ tags:
       url: https://github.com/eliona-smart-building-assistant/app-template
 
 paths:
-  /config:
+  /configs:
     get:
       tags:
         - Configuration
@@ -77,7 +77,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Configuration"
 
-  /config/{config-id}:
+  /configs/{config-id}:
     get:
       tags:
         - Configuration
