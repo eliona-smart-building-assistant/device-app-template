@@ -35,7 +35,5 @@ COPY conf/*.sql ./conf/
 COPY openapi.yaml ./
 COPY metadata.json ./
 
-ENV APPNAME=template
-
 ENV TZ=Europe/Zurich
 CMD [ "/app" ]
