@@ -11,6 +11,8 @@ package apiserver
 
 import (
 	"encoding/json"
+	"errors"
+	"io"
 	"net/http"
 	"strings"
 
@@ -137,7 +139,7 @@ func (c *ConfigurationAPIController) PostConfiguration(w http.ResponseWriter, r 
 	configurationParam := Configuration{}
 	d := json.NewDecoder(r.Body)
 	d.DisallowUnknownFields()
-	if err := d.Decode(&configurationParam); err != nil {
+	if err := d.Decode(&configurationParam); err != nil && !errors.Is(err, io.EOF) {
 		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
 		return
 	}
@@ -173,7 +175,7 @@ func (c *ConfigurationAPIController) PutConfigurationById(w http.ResponseWriter,
 	configurationParam := Configuration{}
 	d := json.NewDecoder(r.Body)
 	d.DisallowUnknownFields()
-	if err := d.Decode(&configurationParam); err != nil {
+	if err := d.Decode(&configurationParam); err != nil && !errors.Is(err, io.EOF) {
 		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
 		return
 	}

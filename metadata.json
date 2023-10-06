@@ -1,6 +1,6 @@
 {
   "name": "template",
-  "elionaMinVersion": "v10.1.0",
+  "elionaMinVersion": "v11.0.0",
   "displayName": {
     "en": "App template",
     "de": "App Vorlage"
