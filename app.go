@@ -16,21 +16,85 @@
 package main
 
 import (
+	"context"
 	"net/http"
+	"sync"
 	"template/apiserver"
 	"template/apiservices"
+	"template/conf"
+	"template/eliona"
+	"time"
 
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	utilshttp "github.com/eliona-smart-building-assistant/go-utils/http"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 )
 
-// doAnything is the main app function which is called periodically
-func doAnything() {
+var once sync.Once
 
-	// Todo: implement everything the app should do
-	log.Debug("main", "do anything")
+func collectData() {
+	configs, err := conf.GetConfigs(context.Background())
+	if err != nil {
+		log.Fatal("conf", "Couldn't read configs from DB: %v", err)
+		return
+	}
+	if len(configs) == 0 {
+		once.Do(func() {
+			log.Info("conf", "No configs in DB. Please configure the app in Eliona.")
+		})
+		return
+	}
 
+	for _, config := range configs {
+		if !conf.IsConfigEnabled(config) {
+			if conf.IsConfigActive(config) {
+				conf.SetConfigActiveState(context.Background(), config, false)
+			}
+			continue
+		}
+
+		if !conf.IsConfigActive(config) {
+			conf.SetConfigActiveState(context.Background(), config, true)
+			log.Info("conf", "Collecting initialized with Configuration %d:\n"+
+				"Enable: %t\n"+
+				"Refresh Interval: %d\n"+
+				"Request Timeout: %d\n"+
+				"Project IDs: %v\n",
+				*config.Id,
+				*config.Enable,
+				config.RefreshInterval,
+				*config.RequestTimeout,
+				*config.ProjectIDs)
+		}
+
+		common.RunOnceWithParam(func(config apiserver.Configuration) {
+			log.Info("main", "Collecting %d started.", *config.Id)
+			if err := collectResources(&config); err != nil {
+				return // Error is handled in the method itself.
+			}
+			log.Info("main", "Collecting %d finished.", *config.Id)
+
+			time.Sleep(time.Second * time.Duration(config.RefreshInterval))
+		}, config, *config.Id)
+	}
+}
+
+func collectResources(config *apiserver.Configuration) error {
+	// Do the magic here
+	return nil
+}
+
+// listenForOutputChanges listens to output attribute changes from Eliona. Delete if not needed.
+func listenForOutputChanges() {
+	outputs, err := eliona.ListenForOutputChanges()
+	if err != nil {
+		log.Error("eliona", "listening for output changes: %v", err)
+		return
+	}
+	for output := range outputs {
+		_ = output
+		// Do the outpur magic here.
+	}
 }
 
 // listenApi starts the API server and listen for requests

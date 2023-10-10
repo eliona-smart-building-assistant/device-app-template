@@ -55,8 +55,9 @@ func main() {
 
 	// Starting the service to collect the data for this app.
 	common.WaitForWithOs(
-		common.Loop(doAnything, time.Second),
+		common.Loop(collectData, time.Second),
 		listenApi,
+		listenForOutputChanges,
 	)
 
 	log.Info("main", "Terminate the app.")
