@@ -86,14 +86,17 @@ func collectResources(config *apiserver.Configuration) error {
 
 // listenForOutputChanges listens to output attribute changes from Eliona. Delete if not needed.
 func listenForOutputChanges() {
-	outputs, err := eliona.ListenForOutputChanges()
-	if err != nil {
-		log.Error("eliona", "listening for output changes: %v", err)
-		return
-	}
-	for output := range outputs {
-		_ = output
-		// Do the outpur magic here.
+	for { // We want to restart listening in case something breaks.
+		outputs, err := eliona.ListenForOutputChanges()
+		if err != nil {
+			log.Error("eliona", "listening for output changes: %v", err)
+			return
+		}
+		for output := range outputs {
+			_ = output
+			// Do the output magic here.
+		}
+		time.Sleep(time.Second * 5) // Give the server a little break.
 	}
 }
 
