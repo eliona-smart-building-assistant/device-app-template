@@ -31,7 +31,7 @@ create table if not exists template.configuration
 create table if not exists template.asset
 (
 	id               bigserial primary key,
-	configuration_id bigserial not null references template.configuration(id),
+	configuration_id bigserial not null references template.configuration(id) ON DELETE CASCADE,
 	project_id       text      not null,
 	global_asset_id  text      not null,
 	asset_id         integer
