@@ -10,6 +10,9 @@ import (
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 )
 
+const ClientReference string = "template-app"
+
+// TODO: Do not pass Asset here. UpsertAssetData depends on field tags
 func UpsertAssetData(config apiserver.Configuration, assets []Asset) error {
 	for _, projectId := range *config.ProjectIDs {
 		for _, a := range assets {
@@ -23,8 +26,9 @@ func UpsertAssetData(config apiserver.Configuration, assets []Asset) error {
 			}
 
 			data := asset.Data{
-				AssetId: *assetId,
-				Data:    a,
+				AssetId:         *assetId,
+				Data:            a,
+				ClientReference: ClientReference,
 			}
 			if asset.UpsertAssetDataIfAssetExists(data); err != nil {
 				return fmt.Errorf("upserting data: %v", err)
