@@ -21,6 +21,7 @@ import (
 	"sync"
 	"template/apiserver"
 	"template/apiservices"
+	"template/appdb"
 	"template/conf"
 	"template/eliona"
 	"time"
@@ -97,11 +98,29 @@ func listenForOutputChanges() {
 				// Just an echoed value this app sent.
 				continue
 			}
-			_ = output
-			// Do the output magic here.
+			asset, err := conf.GetAssetById(output.AssetId)
+			if err != nil {
+				log.Error("conf", "getting asset by assetID %v: %v", output.AssetId, err)
+				return
+			}
+			config, err := conf.GetConfigForAsset(asset)
+			if err != nil {
+				log.Error("conf", "getting configuration for asset id %v: %v", asset.AssetID.Int32, err)
+				return
+			}
+			if err := outputData(asset, config, output.Data); err != nil {
+				log.Error("conf", "outputting data (%v) for config %v and assetId %v: %v", output.Data, config.Id, asset.AssetID.Int32, err)
+				return
+			}
 		}
 		time.Sleep(time.Second * 5) // Give the server a little break.
 	}
+}
+
+// outputData implements passing output data to broker. Remove if not needed.
+func outputData(asset appdb.Asset, config apiserver.Configuration, data map[string]interface{}) error {
+	// Do the output magic here.
+	return nil
 }
 
 // listenApi starts the API server and listen for requests
