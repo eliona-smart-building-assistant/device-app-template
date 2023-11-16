@@ -176,12 +176,13 @@ func SetAllConfigsInactive(ctx context.Context) (int64, error) {
 	})
 }
 
-func InsertAsset(ctx context.Context, config apiserver.Configuration, projId string, globalAssetID string, assetId int32) error {
+func InsertAsset(ctx context.Context, config apiserver.Configuration, projId string, globalAssetID string, assetId int32, providerId string) error {
 	var dbAsset appdb.Asset
 	dbAsset.ConfigurationID = null.Int64FromPtr(config.Id).Int64
 	dbAsset.ProjectID = projId
 	dbAsset.GlobalAssetID = globalAssetID
 	dbAsset.AssetID = null.Int32From(assetId)
+	dbAsset.ProviderID = providerId
 	return dbAsset.InsertG(ctx, boil.Infer())
 }
 
