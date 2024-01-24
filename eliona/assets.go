@@ -15,6 +15,14 @@
 
 package eliona
 
+import (
+	"fmt"
+
+	api "github.com/eliona-smart-building-assistant/go-eliona-api-client/v2"
+	"github.com/eliona-smart-building-assistant/go-eliona/client"
+	"github.com/eliona-smart-building-assistant/go-utils/log"
+)
+
 type Asset interface {
 	AssetType() string
 	Id() string
@@ -23,3 +31,23 @@ type Asset interface {
 //
 // Todo: Define anything for eliona like writing assets or heap data
 //
+
+func notifyUser(userId string, projectId string, assetsCreated int) error {
+	receipt, _, err := client.NewClient().CommunicationAPI.
+		PostNotification(client.AuthenticationContext()).
+		Notification(
+			api.Notification{
+				User:      userId,
+				ProjectId: *api.NewNullableString(&projectId),
+				Message: *api.NewNullableTranslation(&api.Translation{
+					De: api.PtrString(fmt.Sprintf("Template App hat %d neue Assets angelegt. Diese sind nun im Asset-Management verfügbar.", assetsCreated)),
+					En: api.PtrString(fmt.Sprintf("Template app added %v new assets. They are now available in Asset Management.", assetsCreated)),
+				}),
+			}).
+		Execute()
+	log.Debug("eliona", "posted notification about CAC: %v", receipt)
+	if err != nil {
+		return fmt.Errorf("posting CAC notification: %v", err)
+	}
+	return nil
+}

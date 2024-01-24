@@ -25,7 +25,8 @@ create table if not exists template.configuration
 	asset_filter         json,
 	active               boolean default false,
 	enable               boolean default false,
-	project_ids          text[]
+	project_ids          text[],
+	user_id              text
 );
 
 create table if not exists template.asset
