@@ -17,20 +17,28 @@ package eliona
 
 import (
 	"fmt"
+	"template/apiserver"
 
 	api "github.com/eliona-smart-building-assistant/go-eliona-api-client/v2"
+	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-eliona/client"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 )
 
-type Asset interface {
-	AssetType() string
-	Id() string
+func CreateAssets(config apiserver.Configuration, root asset.Root) error {
+	for _, projectId := range *config.ProjectIDs {
+		assetsCreated, err := asset.CreateAssets(root, projectId)
+		if err != nil {
+			return err
+		}
+		if assetsCreated != 0 {
+			if err := notifyUser(*config.UserId, projectId, assetsCreated); err != nil {
+				return fmt.Errorf("notifying user about CAC: %v", err)
+			}
+		}
+	}
+	return nil
 }
-
-//
-// Todo: Define anything for eliona like writing assets or heap data
-//
 
 func notifyUser(userId string, projectId string, assetsCreated int) error {
 	receipt, _, err := client.NewClient().CommunicationAPI.

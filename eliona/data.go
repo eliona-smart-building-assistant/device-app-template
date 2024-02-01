@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"template/apiserver"
 	"template/conf"
+	"template/model"
 
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
@@ -12,17 +13,18 @@ import (
 
 const ClientReference string = "template-app"
 
-// TODO: Do not pass Asset here. UpsertAssetData depends on field tags
-func UpsertAssetData(config apiserver.Configuration, assets []Asset) error {
+func UpsertAssetData(config apiserver.Configuration, assets []model.ExampleDevice) error {
 	for _, projectId := range *config.ProjectIDs {
 		for _, a := range assets {
-			log.Debug("Eliona", "upserting data for asset: config %d and asset '%v'", config.Id, a.Id())
-			assetId, err := conf.GetAssetId(context.Background(), config, projectId, a.Id())
+			log.Debug("Eliona", "upserting data for asset: config %d and asset '%v'", config.Id, a.GetGAI())
+			assetId, err := conf.GetAssetId(context.Background(), config, projectId, a.GetGAI())
 			if err != nil {
 				return err
 			}
 			if assetId == nil {
-				return fmt.Errorf("unable to find asset ID")
+				// This might happen in case of filtered or newly added devices.
+				log.Debug("conf", "unable to find asset ID for %v", a.GetGAI())
+				continue
 			}
 
 			data := asset.Data{
