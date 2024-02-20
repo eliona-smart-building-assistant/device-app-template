@@ -60,7 +60,11 @@ func (c *CustomizationAPIController) Routes() Routes {
 // GetDashboardTemplateByName - Get a full dashboard template
 func (c *CustomizationAPIController) GetDashboardTemplateByName(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	query := r.URL.Query()
+	query, err := parseQuery(r.URL.RawQuery)
+	if err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
 	dashboardTemplateNameParam := params["dashboard-template-name"]
 	if dashboardTemplateNameParam == "" {
 		c.errorHandler(w, r, &RequiredError{"dashboard-template-name"}, nil)

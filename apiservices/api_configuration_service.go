@@ -23,18 +23,18 @@ import (
 	"template/conf"
 )
 
-// ConfigurationApiService is a service that implements the logic for the ConfigurationApiServicer
-// This service should implement the business logic for every endpoint for the ConfigurationApi API.
+// ConfigurationAPIService is a service that implements the logic for the ConfigurationAPIServicer
+// This service should implement the business logic for every endpoint for the ConfigurationAPI API.
 // Include any external packages or services that will be required by this service.
-type ConfigurationApiService struct {
+type ConfigurationAPIService struct {
 }
 
-// NewConfigurationApiService creates a default api service
-func NewConfigurationApiService() apiserver.ConfigurationAPIServicer {
-	return &ConfigurationApiService{}
+// NewConfigurationAPIService creates a default api service
+func NewConfigurationAPIService() apiserver.ConfigurationAPIServicer {
+	return &ConfigurationAPIService{}
 }
 
-func (s *ConfigurationApiService) GetConfigurations(ctx context.Context) (apiserver.ImplResponse, error) {
+func (s *ConfigurationAPIService) GetConfigurations(ctx context.Context) (apiserver.ImplResponse, error) {
 	configs, err := conf.GetConfigs(ctx)
 	if err != nil {
 		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
@@ -42,7 +42,7 @@ func (s *ConfigurationApiService) GetConfigurations(ctx context.Context) (apiser
 	return apiserver.Response(http.StatusOK, configs), nil
 }
 
-func (s *ConfigurationApiService) PostConfiguration(ctx context.Context, config apiserver.Configuration) (apiserver.ImplResponse, error) {
+func (s *ConfigurationAPIService) PostConfiguration(ctx context.Context, config apiserver.Configuration) (apiserver.ImplResponse, error) {
 	insertedConfig, err := conf.InsertConfig(ctx, config)
 	if err != nil {
 		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
@@ -50,7 +50,7 @@ func (s *ConfigurationApiService) PostConfiguration(ctx context.Context, config 
 	return apiserver.Response(http.StatusCreated, insertedConfig), nil
 }
 
-func (s *ConfigurationApiService) GetConfigurationById(ctx context.Context, configId int64) (apiserver.ImplResponse, error) {
+func (s *ConfigurationAPIService) GetConfigurationById(ctx context.Context, configId int64) (apiserver.ImplResponse, error) {
 	config, err := conf.GetConfig(ctx, configId)
 	if errors.Is(err, conf.ErrBadRequest) {
 		return apiserver.ImplResponse{Code: http.StatusBadRequest}, nil
@@ -61,7 +61,7 @@ func (s *ConfigurationApiService) GetConfigurationById(ctx context.Context, conf
 	return apiserver.Response(http.StatusOK, config), nil
 }
 
-func (s *ConfigurationApiService) PutConfigurationById(ctx context.Context, configId int64, config apiserver.Configuration) (apiserver.ImplResponse, error) {
+func (s *ConfigurationAPIService) PutConfigurationById(ctx context.Context, configId int64, config apiserver.Configuration) (apiserver.ImplResponse, error) {
 	config.Id = &configId
 	upsertedConfig, err := conf.UpsertConfig(ctx, config)
 	if err != nil {
@@ -70,7 +70,7 @@ func (s *ConfigurationApiService) PutConfigurationById(ctx context.Context, conf
 	return apiserver.Response(http.StatusCreated, upsertedConfig), nil
 }
 
-func (s *ConfigurationApiService) DeleteConfigurationById(ctx context.Context, configId int64) (apiserver.ImplResponse, error) {
+func (s *ConfigurationAPIService) DeleteConfigurationById(ctx context.Context, configId int64) (apiserver.ImplResponse, error) {
 	err := conf.DeleteConfig(ctx, configId)
 	if errors.Is(err, conf.ErrBadRequest) {
 		return apiserver.ImplResponse{Code: http.StatusBadRequest}, nil

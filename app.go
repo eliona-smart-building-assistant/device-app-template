@@ -130,9 +130,9 @@ func listenApi() {
 		frontend.NewEnvironmentHandler(
 			utilshttp.NewCORSEnabledHandler(
 				apiserver.NewRouter(
-					apiserver.NewConfigurationAPIController(apiservices.NewConfigurationApiService()),
-					apiserver.NewVersionAPIController(apiservices.NewVersionApiService()),
-					apiserver.NewCustomizationAPIController(apiservices.NewCustomizationApiService()),
+					apiserver.NewConfigurationAPIController(apiservices.NewConfigurationAPIService()),
+					apiserver.NewVersionAPIController(apiservices.NewVersionAPIService()),
+					apiserver.NewCustomizationAPIController(apiservices.NewCustomizationAPIService()),
 				))))
 	log.Fatal("main", "API server: %v", err)
 }
