@@ -90,7 +90,7 @@ For the API server the [OpenAPI Generator](https://openapi-generator.tech/docs/g
 
 ### Generate Database access ###
 
-For the database access [SQLBoiler](https://github.com/volatiletech/sqlboiler) is used. The easiest way to generate the database files is to use one of the predefined generation script which use the SQLBoiler implementation. Please note that the database connection in the `sqlboiler.toml` file have to be configured.
+For the database access [SQLBoiler](https://github.com/volatiletech/sqlboiler) is used. The easiest way to generate the database files is to use one of the predefined generation script which use the SQLBoiler implementation.
 
 ```
 .\generate-db.cmd # Windows
