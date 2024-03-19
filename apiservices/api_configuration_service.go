@@ -52,8 +52,8 @@ func (s *ConfigurationAPIService) PostConfiguration(ctx context.Context, config 
 
 func (s *ConfigurationAPIService) GetConfigurationById(ctx context.Context, configId int64) (apiserver.ImplResponse, error) {
 	config, err := conf.GetConfig(ctx, configId)
-	if errors.Is(err, conf.ErrBadRequest) {
-		return apiserver.ImplResponse{Code: http.StatusBadRequest}, nil
+	if errors.Is(err, conf.ErrNotFound) {
+		return apiserver.ImplResponse{Code: http.StatusNotFound}, nil
 	}
 	if err != nil {
 		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
@@ -72,8 +72,8 @@ func (s *ConfigurationAPIService) PutConfigurationById(ctx context.Context, conf
 
 func (s *ConfigurationAPIService) DeleteConfigurationById(ctx context.Context, configId int64) (apiserver.ImplResponse, error) {
 	err := conf.DeleteConfig(ctx, configId)
-	if errors.Is(err, conf.ErrBadRequest) {
-		return apiserver.ImplResponse{Code: http.StatusBadRequest}, nil
+	if errors.Is(err, conf.ErrNotFound) {
+		return apiserver.ImplResponse{Code: http.StatusNotFound}, nil
 	}
 	if err != nil {
 		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err

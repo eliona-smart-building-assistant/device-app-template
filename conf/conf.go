@@ -17,6 +17,7 @@ package conf
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -30,6 +31,7 @@ import (
 )
 
 var ErrBadRequest = errors.New("bad request")
+var ErrNotFound = errors.New("not found")
 
 func InsertConfig(ctx context.Context, config apiserver.Configuration) (apiserver.Configuration, error) {
 	dbConfig, err := dbConfigFromApiConfig(ctx, config)
@@ -53,21 +55,21 @@ func UpsertConfig(ctx context.Context, config apiserver.Configuration) (apiserve
 	return config, nil
 }
 
-func GetConfig(ctx context.Context, configID int64) (*apiserver.Configuration, error) {
+func GetConfig(ctx context.Context, configID int64) (apiserver.Configuration, error) {
 	dbConfig, err := appdb.Configurations(
 		appdb.ConfigurationWhere.ID.EQ(configID),
 	).OneG(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("fetching config from database: %v", err)
+	if errors.Is(err, sql.ErrNoRows) {
+		return apiserver.Configuration{}, ErrNotFound
 	}
-	if dbConfig == nil {
-		return nil, ErrBadRequest
+	if err != nil {
+		return apiserver.Configuration{}, fmt.Errorf("fetching config from database: %v", err)
 	}
 	apiConfig, err := apiConfigFromDbConfig(dbConfig)
 	if err != nil {
-		return nil, fmt.Errorf("creating API config from DB config: %v", err)
+		return apiserver.Configuration{}, fmt.Errorf("creating API config from DB config: %v", err)
 	}
-	return &apiConfig, nil
+	return apiConfig, nil
 }
 
 func DeleteConfig(ctx context.Context, configID int64) error {
@@ -86,7 +88,7 @@ func DeleteConfig(ctx context.Context, configID int64) error {
 		return fmt.Errorf("shouldn't happen: deleted more (%v) configs by ID", count)
 	}
 	if count == 0 {
-		return ErrBadRequest
+		return ErrNotFound
 	}
 	return nil
 }
@@ -217,6 +219,9 @@ func GetAssetById(assetId int32) (appdb.Asset, error) {
 
 func GetConfigForAsset(asset appdb.Asset) (apiserver.Configuration, error) {
 	c, err := asset.Configuration().OneG(context.Background())
+	if errors.Is(err, sql.ErrNoRows) {
+		return apiserver.Configuration{}, ErrNotFound
+	}
 	if err != nil {
 		return apiserver.Configuration{}, fmt.Errorf("fetching configuration: %v", err)
 	}
