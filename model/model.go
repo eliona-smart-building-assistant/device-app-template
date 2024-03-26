@@ -57,7 +57,7 @@ func (d *ExampleDevice) GetDescription() string {
 }
 
 func (d *ExampleDevice) GetAssetType() string {
-	return "mystrom_switch"
+	return "template_example_device"
 }
 
 func (d *ExampleDevice) GetGAI() string {
@@ -70,7 +70,7 @@ func (d *ExampleDevice) GetAssetID(projectID string) (*int32, error) {
 
 func (d *ExampleDevice) SetAssetID(assetID int32, projectID string) error {
 	if err := conf.InsertAsset(context.Background(), *d.Config, projectID, d.GetGAI(), assetID, d.ID); err != nil {
-		return fmt.Errorf("inserting asset to Config db: %v", err)
+		return fmt.Errorf("inserting asset to config db: %v", err)
 	}
 	return nil
 }
@@ -118,7 +118,7 @@ func (r *Root) SetAssetID(assetID int32, projectID string) error {
 }
 
 func (r *Root) GetLocationalChildren() []asset.LocationalNode {
-	locationalChildren := make([]asset.LocationalNode, 0)
+	locationalChildren := make([]asset.LocationalNode, 0, len(r.locationsMap))
 	for _, room := range r.locationsMap {
 		roomCopy := room // Create a copy of room
 		locationalChildren = append(locationalChildren, &roomCopy)
@@ -127,7 +127,7 @@ func (r *Root) GetLocationalChildren() []asset.LocationalNode {
 }
 
 func (r *Root) GetFunctionalChildren() []asset.FunctionalNode {
-	functionalChildren := make([]asset.FunctionalNode, len(r.devicesSlice))
+	functionalChildren := make([]asset.FunctionalNode, 0, len(r.devicesSlice))
 	for i := range r.devicesSlice {
 		functionalChildren[i] = &r.devicesSlice[i]
 	}
