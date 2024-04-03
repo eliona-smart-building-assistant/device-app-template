@@ -39,5 +39,7 @@ create table if not exists template.asset
 	asset_id         integer
 );
 
--- Makes the new objects available for all other init steps
-commit;
+-- There is a transaction started in app.Init(). We need to commit to make the
+-- new objects available for all other init steps.
+-- Chain starts the same transaction again.
+commit and chain;
