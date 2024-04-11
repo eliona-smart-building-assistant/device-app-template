@@ -16,8 +16,8 @@
 package eliona
 
 import (
+	"app-name/apiserver"
 	"fmt"
-	"template/apiserver"
 
 	api "github.com/eliona-smart-building-assistant/go-eliona-api-client/v2"
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"

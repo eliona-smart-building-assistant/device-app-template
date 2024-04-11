@@ -16,14 +16,14 @@
 package main
 
 import (
+	"app-name/apiserver"
+	"app-name/apiservices"
+	"app-name/appdb"
+	"app-name/conf"
+	"app-name/eliona"
 	"context"
 	"net/http"
 	"sync"
-	"template/apiserver"
-	"template/apiservices"
-	"template/appdb"
-	"template/conf"
-	"template/eliona"
 	"time"
 
 	"github.com/eliona-smart-building-assistant/go-eliona/app"

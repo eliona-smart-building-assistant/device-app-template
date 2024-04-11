@@ -16,13 +16,13 @@
 package conf
 
 import (
+	"app-name/apiserver"
+	"app-name/appdb"
 	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"template/apiserver"
-	"template/appdb"
 
 	"github.com/eliona-smart-building-assistant/go-eliona/frontend"
 	"github.com/eliona-smart-building-assistant/go-utils/common"

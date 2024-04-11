@@ -1,4 +1,4 @@
-module template
+module app-name
 
 go 1.21
 
@@ -22,7 +22,7 @@ replace github.com/ericlagergren/decimal => github.com/ericlagergren/decimal v0.
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/ericlagergren/decimal v0.0.0-20240305081647-93d586550569 // indirect
+	github.com/ericlagergren/decimal v0.0.0-20190420051523-6335edbaa640 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect

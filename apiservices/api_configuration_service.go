@@ -16,11 +16,11 @@
 package apiservices
 
 import (
+	"app-name/apiserver"
+	"app-name/conf"
 	"context"
 	"errors"
 	"net/http"
-	"template/apiserver"
-	"template/conf"
 )
 
 // ConfigurationAPIService is a service that implements the logic for the ConfigurationAPIServicer

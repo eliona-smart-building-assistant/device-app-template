@@ -16,10 +16,10 @@
 package model
 
 import (
+	"app-name/apiserver"
+	"app-name/conf"
 	"context"
 	"fmt"
-	"template/apiserver"
-	"template/conf"
 
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-eliona/utils"
@@ -57,7 +57,7 @@ func (d *ExampleDevice) GetDescription() string {
 }
 
 func (d *ExampleDevice) GetAssetType() string {
-	return "template_example_device"
+	return "app_name_device"
 }
 
 func (d *ExampleDevice) GetGAI() string {
@@ -91,15 +91,15 @@ type Root struct {
 }
 
 func (r *Root) GetName() string {
-	return "template"
+	return "app_name"
 }
 
 func (r *Root) GetDescription() string {
-	return "Root asset for template devices"
+	return "Root asset for App Name devices"
 }
 
 func (r *Root) GetAssetType() string {
-	return "template_root"
+	return "app_name_root"
 }
 
 func (r *Root) GetGAI() string {

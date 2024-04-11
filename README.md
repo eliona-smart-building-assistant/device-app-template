@@ -1,6 +1,14 @@
-# App Template
+<mark>
+Replace the following strings globally with the real app name:
+</mark>
 
-This template is a part of the Eliona App SDK. It can be used to create an app stub for an Eliona environment.
+- `app-name` with app's name. Use `-` if the app name contains spaces. All letters are lower-cased.
+- `app_name` and `app\\_name` with app's name. Use `_` if the app name contains spaces. All letters are lower-cased.
+- `App Name` with app's real names. Letters can be mixed-cased, depends on using e.g. brand names.
+
+# Eliona App for App Name
+
+The App Name app is used to access App Name.
 
 ## Configuration
 
@@ -34,11 +42,11 @@ This initialization can be handled by the `reset.sql` script.
 
 <mark>Todo: Describe other tables if the app needs them.</mark>
 
-The app requires configuration data that remains in the database. To do this, the app creates its own database schema `template` during initialization. To modify and handle the configuration data the app provides an API access. Have a look at the [API specification](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/app-template/develop/openapi.yaml) how the configuration tables should be used.
+The app requires configuration data that remains in the database. To do this, the app creates its own database schema `app_name` during initialization. To modify and handle the configuration data the app provides an API access. Have a look at the [API specification](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/app-name-app/develop/openapi.yaml) how the configuration tables should be used.
 
-- `template.configuration`: Contains configuration of the app. Editable through the API.
+- `app_name.configuration`: Contains configuration of the app. Editable through the API.
 
-- `template.asset`: Provides asset mapping. Maps broker's asset IDs to Eliona asset IDs.
+- `app_name.asset`: Provides asset mapping. Maps broker's asset IDs to Eliona asset IDs.
 
 **Generation**: to generate access method to database see Generation section below.
 
@@ -49,7 +57,7 @@ The app requires configuration data that remains in the database. To do this, th
 
 The app provides its own API to access configuration data and other functions. The full description of the API is defined in the `openapi.yaml` OpenAPI definition file.
 
-- [API Reference](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/app-template/develop/openapi.yaml) shows details of the API
+- [API Reference](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/app-name-app/develop/openapi.yaml) shows details of the API
 
 **Generation**: to generate api server stub see Generation section below.
 
