@@ -1,5 +1,5 @@
-#  This file is part of the eliona project.
-#  Copyright © 2022 LEICOM iTEC AG. All Rights Reserved.
+#  This file is part of the Eliona project.
+#  Copyright © 2024 IoTEC AG. All Rights Reserved.
 #  ______ _ _
 # |  ____| (_)
 # | |__  | |_  ___  _ __   __ _
@@ -24,7 +24,7 @@ RUN go mod download
 
 RUN DATE=$(date) && \
     GIT_COMMIT=$(git rev-list -1 HEAD) && \
-    go build -ldflags "-X 'template/apiservices.BuildTimestamp=$DATE' -X 'template/apiservices.GitCommit=$GIT_COMMIT'" -o ../app
+    go build -ldflags "-X 'app-name/apiservices.BuildTimestamp=$DATE' -X 'app-name/apiservices.GitCommit=$GIT_COMMIT'" -o ../app
 
 FROM eliona/base-alpine:latest AS target
 

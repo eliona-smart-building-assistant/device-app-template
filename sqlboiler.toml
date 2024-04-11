@@ -8,10 +8,10 @@ add-enum-types = true
 [psql]
 dbname = "postgres"
 host   = "localhost"
-port   = 60001
+port   = 6001
 user   = "postgres"
 pass   = "secret"
-schema = "template"
+schema = "app_name"
 sslmode = "disable"
 
 [[types]]

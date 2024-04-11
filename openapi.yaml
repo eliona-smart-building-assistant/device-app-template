@@ -1,7 +1,7 @@
 openapi: 3.0.3
 
-#  This file is part of the eliona project.
-#  Copyright © 2022 LEICOM iTEC AG. All Rights Reserved.
+#  This file is part of the Eliona project.
+#  Copyright © 2024 IoTEC AG. All Rights Reserved.
 #  ______ _ _
 # |  ____| (_)
 # | |__  | |_  ___  _ __   __ _
@@ -17,29 +17,36 @@ openapi: 3.0.3
 
 info:
   version: 1.0.0
-  title: App template API
-  description: API to access and configure the app template
+  title: App Name app API
+  description: API to access and configure the App Name app
 externalDocs:
-  description: Find out more about the app template
-  url: https://github.com/eliona-smart-building-assistant/app-template
+  description: Find out more about the App Name app
+  url: https://github.com/eliona-smart-building-assistant/app-name-app
 servers:
-  - url: http://template/v1
+  - url: "https://{server}/v1"
+    variables:
+      server:
+        default: app-name
+  - url: "https://{environment}.eliona.io/apps/app-name/api/v1"
+    variables:
+      environment:
+        default: name
 
 tags:
   - name: Configuration
     description: Configure the app
     externalDocs:
-      url: https://github.com/eliona-smart-building-assistant/app-template
+      url: https://github.com/eliona-smart-building-assistant/app-name-app
 
   - name: Version
     description: API version
     externalDocs:
-      url: https://github.com/eliona-smart-building-assistant/app-template
+      url: https://github.com/eliona-smart-building-assistant/app-name-app
 
   - name: Customization
     description: Help to customize Eliona environment
     externalDocs:
-      url: https://github.com/eliona-smart-building-assistant/app-template
+      url: https://github.com/eliona-smart-building-assistant/app-name-app
 
 paths:
   /configurations:

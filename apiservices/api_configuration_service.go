@@ -1,5 +1,5 @@
-//  This file is part of the eliona project.
-//  Copyright © 2022 LEICOM iTEC AG. All Rights Reserved.
+//  This file is part of the Eliona project.
+//  Copyright © 2024 IoTEC AG. All Rights Reserved.
 //  ______ _ _
 // |  ____| (_)
 // | |__  | |_  ___  _ __   __ _
@@ -16,10 +16,10 @@
 package apiservices
 
 import (
+	"app-name/apiserver"
 	"context"
 	"errors"
 	"net/http"
-	"template/apiserver"
 )
 
 // ConfigurationAPIService is a service that implements the logic for the ConfigurationAPIServicer

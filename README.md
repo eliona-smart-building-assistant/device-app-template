@@ -1,6 +1,14 @@
-# App Template
+<mark>
+Replace the following strings globally with the real app name:
+</mark>
 
-This template is a part of the Eliona App SDK. It can be used to create an app stub for an Eliona environment.
+- `app-name` with app's name. Use `-` if the app name contains spaces. All letters are lower-cased.
+- `app_name` and `app\\_name` with app's name. Use `_` if the app name contains spaces. All letters are lower-cased.
+- `App Name` with app's real names. Letters can be mixed-cased, depends on using e.g. brand names.
+
+# Eliona App for App Name
+
+The App Name app is used to access App Name.
 
 ## Configuration
 
@@ -36,9 +44,9 @@ This initialization can be handled by the `reset.sql` script.
 
 <mark>Todo: Decide if the app uses its own data and which data should be accessible from outside the app. This is always the case with configuration data. If so, the app needs its own API server to provide access to this data. To define the API use an openapi.yaml file and generators to build the server stub.</mark>
 
-The app requires configuration data that remains in the database. To do this, the app creates its own database schema `template` during initialization. To modify and handle the configuration data the app provides an API access. Have a look at the [API specification](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/app-template/develop/openapi.yaml) how the configuration tables should be used.
+The app requires configuration data that remains in the database. To do this, the app creates its own database schema `app_name` during initialization. To modify and handle the configuration data the app provides an API access. Have a look at the [API specification](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/app-name-app/develop/openapi.yaml) how the configuration tables should be used.
 
-- `template.example_table`: <mark>Todo: Describe the database table in short.</mark>
+- `app_name.example_table`: <mark>Todo: Describe the database table in short.</mark>
 
 **Generation**: to generate access method to database see Generation section below.
 
@@ -49,7 +57,7 @@ The app requires configuration data that remains in the database. To do this, th
 
 The app provides its own API to access configuration data and other functions. The full description of the API is defined in the `openapi.yaml` OpenAPI definition file.
 
-- [API Reference](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/app-template/develop/openapi.yaml) shows Details of the API
+- [API Reference](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/app-name-app/develop/openapi.yaml) shows Details of the API
 
 **Generation**: to generate api server stub see Generation section below.
 

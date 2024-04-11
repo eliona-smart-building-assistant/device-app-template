@@ -1,4 +1,4 @@
-module template
+module app-name
 
 go 1.21
 
