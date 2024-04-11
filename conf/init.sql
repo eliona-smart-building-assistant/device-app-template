@@ -1,5 +1,5 @@
---  This file is part of the eliona project.
---  Copyright © 2022 LEICOM iTEC AG. All Rights Reserved.
+--  This file is part of the Eliona project.
+--  Copyright © 2024 IoTEC AG. All Rights Reserved.
 --  ______ _ _
 -- |  ____| (_)
 -- | |__  | |_  ___  _ __   __ _
@@ -13,7 +13,7 @@
 --  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 --  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-create schema if not exists template;
+create schema if not exists __template__;
 
 -- Should be editable by eliona frontend.
 create table if not exists template.configuration
