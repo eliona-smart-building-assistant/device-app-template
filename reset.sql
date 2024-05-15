@@ -23,12 +23,12 @@ DELETE FROM versioning.patches
 WHERE app_name = 'app-name';
 
 INSERT INTO public.eliona_store (app_name, category, version)
-VALUES ('app-name', 'app', '1.0.0')
-	ON CONFLICT (app_name) DO UPDATE SET version = '1.0.0';
+VALUES ('app-name', 'app', 'v0.0.0')
+ON CONFLICT (app_name) DO UPDATE SET version = 'v0.0.0';
 
 INSERT INTO public.eliona_app (app_name, enable)
 VALUES ('app-name', 't')
-	ON CONFLICT (app_name) DO UPDATE SET initialized_at = null;
+ON CONFLICT (app_name) DO UPDATE SET initialized_at = null;
 
 DROP SCHEMA IF EXISTS app_name CASCADE;
 
@@ -52,7 +52,7 @@ DELETE FROM public.widget_data
 WHERE widget_id IN (
 	SELECT public.widget.id
 	FROM public.widget
-	JOIN public.dashboard USING (dashboard_id)
+		JOIN public.dashboard USING (dashboard_id)
 	WHERE public.dashboard.name LIKE 'App Name%'
 );
 
