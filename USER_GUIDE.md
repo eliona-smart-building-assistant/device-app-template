@@ -32,7 +32,7 @@ Create credentials in App Name Service to connect the App Name services from Eli
 
 ### Configure the App Name app 
 
-Configurations can be created in Eliona under `Apps > App Name > Settings` using the appropriate endpoint with the POST method. Each configuration requires the following data:
+Configurations can be created in Eliona under `Apps > App Name > Settings` which opens the app's [Generic Frontend](https://doc.eliona.io/collection/v/eliona-english/manuals/settings/apps). Here you can use the appropriate endpoint with the POST method. Each configuration requires the following data:
 
 | Attribute         | Description                                                                     |
 |-------------------|---------------------------------------------------------------------------------|
