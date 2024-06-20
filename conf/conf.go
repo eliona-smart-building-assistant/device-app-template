@@ -34,7 +34,7 @@ var ErrBadRequest = errors.New("bad request")
 var ErrNotFound = errors.New("not found")
 
 func InsertConfig(ctx context.Context, config apiserver.Configuration) (apiserver.Configuration, error) {
-	dbConfig, err := dbConfigFromApiConfig(ctx, config)
+	dbConfig, err := toDbConfig(ctx, config)
 	if err != nil {
 		return apiserver.Configuration{}, fmt.Errorf("creating DB config from API config: %v", err)
 	}
@@ -45,7 +45,7 @@ func InsertConfig(ctx context.Context, config apiserver.Configuration) (apiserve
 }
 
 func UpsertConfig(ctx context.Context, config apiserver.Configuration) (apiserver.Configuration, error) {
-	dbConfig, err := dbConfigFromApiConfig(ctx, config)
+	dbConfig, err := toDbConfig(ctx, config)
 	if err != nil {
 		return apiserver.Configuration{}, fmt.Errorf("creating DB config from API config: %v", err)
 	}
@@ -65,7 +65,7 @@ func GetConfig(ctx context.Context, configID int64) (apiserver.Configuration, er
 	if err != nil {
 		return apiserver.Configuration{}, fmt.Errorf("fetching config from database: %v", err)
 	}
-	apiConfig, err := apiConfigFromDbConfig(dbConfig)
+	apiConfig, err := toApiConfig(dbConfig)
 	if err != nil {
 		return apiserver.Configuration{}, fmt.Errorf("creating API config from DB config: %v", err)
 	}
@@ -93,7 +93,7 @@ func DeleteConfig(ctx context.Context, configID int64) error {
 	return nil
 }
 
-func dbConfigFromApiConfig(ctx context.Context, apiConfig apiserver.Configuration) (dbConfig appdb.Configuration, err error) {
+func toDbConfig(ctx context.Context, apiConfig apiserver.Configuration) (dbConfig appdb.Configuration, err error) {
 	dbConfig.APIAccessChangeMe = apiConfig.ApiAccessChangeMe
 
 	if apiConfig.Id != nil {
@@ -128,7 +128,7 @@ func dbConfigFromApiConfig(ctx context.Context, apiConfig apiserver.Configuratio
 	return dbConfig, nil
 }
 
-func apiConfigFromDbConfig(dbConfig *appdb.Configuration) (apiConfig apiserver.Configuration, err error) {
+func toApiConfig(dbConfig *appdb.Configuration) (apiConfig apiserver.Configuration, err error) {
 	apiConfig.ApiAccessChangeMe = dbConfig.APIAccessChangeMe
 
 	apiConfig.Id = &dbConfig.ID
@@ -153,7 +153,7 @@ func GetConfigs(ctx context.Context) ([]apiserver.Configuration, error) {
 	}
 	var apiConfigs []apiserver.Configuration
 	for _, dbConfig := range dbConfigs {
-		ac, err := apiConfigFromDbConfig(dbConfig)
+		ac, err := toApiConfig(dbConfig)
 		if err != nil {
 			return nil, fmt.Errorf("creating API config from DB config: %v", err)
 		}
@@ -231,5 +231,5 @@ func GetConfigForAsset(asset appdb.Asset) (apiserver.Configuration, error) {
 	if err != nil {
 		return apiserver.Configuration{}, fmt.Errorf("fetching configuration: %v", err)
 	}
-	return apiConfigFromDbConfig(c)
+	return toApiConfig(c)
 }
