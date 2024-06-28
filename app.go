@@ -21,6 +21,7 @@ import (
 	"app-name/appdb"
 	"app-name/conf"
 	"app-name/eliona"
+	confmodel "app-name/model/conf"
 	"context"
 	"net/http"
 	"sync"
@@ -67,40 +68,40 @@ func collectData() {
 	}
 
 	for _, config := range configs {
-		if !conf.IsConfigEnabled(config) {
-			if conf.IsConfigActive(config) {
+		if !config.Enable {
+			if config.Active {
 				conf.SetConfigActiveState(context.Background(), config, false)
 			}
 			continue
 		}
 
-		if !conf.IsConfigActive(config) {
+		if !config.Active {
 			conf.SetConfigActiveState(context.Background(), config, true)
 			log.Info("conf", "Collecting initialized with Configuration %d:\n"+
 				"Enable: %t\n"+
 				"Refresh Interval: %d\n"+
 				"Request Timeout: %d\n"+
 				"Project IDs: %v\n",
-				*config.Id,
-				*config.Enable,
+				config.Id,
+				config.Enable,
 				config.RefreshInterval,
-				*config.RequestTimeout,
-				*config.ProjectIDs)
+				config.RequestTimeout,
+				config.ProjectIDs)
 		}
 
-		common.RunOnceWithParam(func(config apiserver.Configuration) {
-			log.Info("main", "Collecting %d started.", *config.Id)
+		common.RunOnceWithParam(func(config confmodel.Configuration) {
+			log.Info("main", "Collecting %d started.", config.Id)
 			if err := collectResources(&config); err != nil {
 				return // Error is handled in the method itself.
 			}
-			log.Info("main", "Collecting %d finished.", *config.Id)
+			log.Info("main", "Collecting %d finished.", config.Id)
 
 			time.Sleep(time.Second * time.Duration(config.RefreshInterval))
-		}, config, *config.Id)
+		}, config, config.Id)
 	}
 }
 
-func collectResources(config *apiserver.Configuration) error {
+func collectResources(config *confmodel.Configuration) error {
 	// Do the magic here
 	return nil
 }
@@ -138,7 +139,7 @@ func listenForOutputChanges() {
 }
 
 // outputData implements passing output data to broker. Remove if not needed.
-func outputData(asset appdb.Asset, config apiserver.Configuration, data map[string]interface{}) error {
+func outputData(asset appdb.Asset, config confmodel.Configuration, data map[string]interface{}) error {
 	// Do the output magic here.
 	return nil
 }

@@ -18,6 +18,7 @@ package apiservices
 import (
 	"app-name/apiserver"
 	"app-name/conf"
+	confmodel "app-name/model/conf"
 	"context"
 	"errors"
 	"net/http"
@@ -43,7 +44,8 @@ func (s *ConfigurationAPIService) GetConfigurations(ctx context.Context) (apiser
 }
 
 func (s *ConfigurationAPIService) PostConfiguration(ctx context.Context, config apiserver.Configuration) (apiserver.ImplResponse, error) {
-	insertedConfig, err := conf.InsertConfig(ctx, config)
+	appConfig := toAppConfig(config)
+	insertedConfig, err := conf.InsertConfig(ctx, appConfig)
 	if err != nil {
 		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
 	}
@@ -63,7 +65,8 @@ func (s *ConfigurationAPIService) GetConfigurationById(ctx context.Context, conf
 
 func (s *ConfigurationAPIService) PutConfigurationById(ctx context.Context, configId int64, config apiserver.Configuration) (apiserver.ImplResponse, error) {
 	config.Id = &configId
-	upsertedConfig, err := conf.UpsertConfig(ctx, config)
+	appConfig := toAppConfig(config)
+	upsertedConfig, err := conf.UpsertConfig(ctx, appConfig)
 	if err != nil {
 		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
 	}
@@ -79,4 +82,71 @@ func (s *ConfigurationAPIService) DeleteConfigurationById(ctx context.Context, c
 		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
 	}
 	return apiserver.ImplResponse{Code: http.StatusNoContent}, nil
+}
+
+func toAPIConfig(appConfig confmodel.Configuration) apiserver.Configuration {
+	return apiserver.Configuration{
+		Id:                &appConfig.Id,
+		ApiAccessChangeMe: appConfig.ApiAccessChangeMe,
+		Enable:            &appConfig.Enable,
+		RefreshInterval:   appConfig.RefreshInterval,
+		RequestTimeout:    &appConfig.RequestTimeout,
+		AssetFilter:       toAPIAssetFilter(appConfig.AssetFilter),
+		Active:            &appConfig.Active,
+		ProjectIDs:        &appConfig.ProjectIDs,
+		UserId:            &appConfig.UserId,
+	}
+}
+
+func toAPIAssetFilter(appAF [][]confmodel.FilterRule) (result [][]apiserver.FilterRule) {
+	for _, outer := range appAF {
+		var innerResult []apiserver.FilterRule
+		for _, fr := range outer {
+			innerResult = append(innerResult, apiserver.FilterRule{
+				Parameter: fr.Parameter,
+				Regex:     fr.Regex,
+			})
+		}
+		result = append(result, innerResult)
+	}
+	return result
+}
+
+func toAppConfig(apiConfig apiserver.Configuration) (appConfig confmodel.Configuration) {
+	appConfig.ApiAccessChangeMe = apiConfig.ApiAccessChangeMe
+
+	if apiConfig.Id != nil {
+		appConfig.Id = *apiConfig.Id
+	}
+	appConfig.RefreshInterval = apiConfig.RefreshInterval
+	if apiConfig.RequestTimeout != nil {
+		appConfig.RequestTimeout = *apiConfig.RequestTimeout
+	}
+	if apiConfig.AssetFilter != nil {
+		appConfig.AssetFilter = toAppAssetFilter(apiConfig.AssetFilter)
+	}
+	if apiConfig.Active != nil {
+		appConfig.Active = *apiConfig.Active
+	}
+	if apiConfig.Enable != nil {
+		appConfig.Enable = *apiConfig.Enable
+	}
+	if apiConfig.ProjectIDs != nil {
+		appConfig.ProjectIDs = *apiConfig.ProjectIDs
+	}
+	return appConfig
+}
+
+func toAppAssetFilter(apiAF [][]apiserver.FilterRule) (result [][]confmodel.FilterRule) {
+	for _, outer := range apiAF {
+		var innerResult []confmodel.FilterRule
+		for _, fr := range outer {
+			innerResult = append(innerResult, confmodel.FilterRule{
+				Parameter: fr.Parameter,
+				Regex:     fr.Regex,
+			})
+		}
+		result = append(result, innerResult)
+	}
+	return result
 }

@@ -16,7 +16,7 @@
 package eliona
 
 import (
-	"app-name/apiserver"
+	confmodel "app-name/model/conf"
 	"fmt"
 
 	api "github.com/eliona-smart-building-assistant/go-eliona-api-client/v2"
@@ -25,14 +25,14 @@ import (
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 )
 
-func CreateAssets(config apiserver.Configuration, root asset.Root) error {
-	for _, projectId := range *config.ProjectIDs {
+func CreateAssets(config confmodel.Configuration, root asset.Root) error {
+	for _, projectId := range config.ProjectIDs {
 		assetsCreated, err := asset.CreateAssets(root, projectId)
 		if err != nil {
 			return err
 		}
 		if assetsCreated != 0 {
-			if err := notifyUser(*config.UserId, projectId, assetsCreated); err != nil {
+			if err := notifyUser(config.UserId, projectId, assetsCreated); err != nil {
 				return fmt.Errorf("notifying user about CAC: %v", err)
 			}
 		}

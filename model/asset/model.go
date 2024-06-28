@@ -16,8 +16,8 @@
 package assetmodel
 
 import (
-	"app-name/apiserver"
 	"app-name/conf"
+	confmodel "app-name/model/conf"
 	"context"
 	"fmt"
 
@@ -32,10 +32,10 @@ type ExampleDevice struct {
 	ID   string `eliona:"id" subtype:"info"`
 	Name string `eliona:"name,filterable" subtype:"info"`
 
-	Config *apiserver.Configuration
+	Config *confmodel.Configuration
 }
 
-func (d *ExampleDevice) AdheresToFilter(filter [][]apiserver.FilterRule) (bool, error) {
+func (d *ExampleDevice) AdheresToFilter(filter [][]confmodel.FilterRule) (bool, error) {
 	f := apiFilterToCommonFilter(filter)
 	fp, err := utils.StructToMap(d)
 	if err != nil {
@@ -87,7 +87,7 @@ type Root struct {
 	locationsMap map[string]ExampleDevice
 	devicesSlice []ExampleDevice
 
-	Config *apiserver.Configuration
+	Config *confmodel.Configuration
 }
 
 func (r *Root) GetName() string {
@@ -136,7 +136,7 @@ func (r *Root) GetFunctionalChildren() []asset.FunctionalNode {
 
 //
 
-func apiFilterToCommonFilter(input [][]apiserver.FilterRule) [][]common.FilterRule {
+func apiFilterToCommonFilter(input [][]confmodel.FilterRule) [][]common.FilterRule {
 	result := make([][]common.FilterRule, len(input))
 	for i := 0; i < len(input); i++ {
 		result[i] = make([]common.FilterRule, len(input[i]))
