@@ -22,11 +22,11 @@ create table if not exists app_name.configuration
 	api_access_change_me text not null,
 	refresh_interval     integer not null default 60,
 	request_timeout      integer not null default 120,
-	asset_filter         json,
-	active               boolean default false,
-	enable               boolean default false,
-	project_ids          text[],
-	user_id              text
+	asset_filter         json not null,
+	active               boolean not null default false,
+	enable               boolean not null default false,
+	project_ids          text[] not null,
+	user_id              text not null
 );
 
 create table if not exists app_name.asset

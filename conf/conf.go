@@ -96,25 +96,33 @@ func DeleteConfig(ctx context.Context, configID int64) error {
 func dbConfigFromApiConfig(ctx context.Context, apiConfig apiserver.Configuration) (dbConfig appdb.Configuration, err error) {
 	dbConfig.APIAccessChangeMe = apiConfig.ApiAccessChangeMe
 
-	dbConfig.ID = null.Int64FromPtr(apiConfig.Id).Int64
-	dbConfig.Enable = null.BoolFromPtr(apiConfig.Enable)
+	if apiConfig.Id != nil {
+		dbConfig.ID = *apiConfig.Id
+	}
 	dbConfig.RefreshInterval = apiConfig.RefreshInterval
 	if apiConfig.RequestTimeout != nil {
 		dbConfig.RequestTimeout = *apiConfig.RequestTimeout
 	}
-	af, err := json.Marshal(apiConfig.AssetFilter)
-	if err != nil {
-		return appdb.Configuration{}, fmt.Errorf("marshalling assetFilter: %v", err)
+	if apiConfig.AssetFilter != nil {
+		af, err := json.Marshal(apiConfig.AssetFilter)
+		if err != nil {
+			return appdb.Configuration{}, fmt.Errorf("marshalling assetFilter: %v", err)
+		}
+		dbConfig.AssetFilter = af
 	}
-	dbConfig.AssetFilter = null.JSONFrom(af)
-	dbConfig.Active = null.BoolFromPtr(apiConfig.Active)
+	if apiConfig.Active != nil {
+		dbConfig.Active = *apiConfig.Active
+	}
+	if apiConfig.Enable != nil {
+		dbConfig.Enable = *apiConfig.Enable
+	}
 	if apiConfig.ProjectIDs != nil {
 		dbConfig.ProjectIds = *apiConfig.ProjectIDs
 	}
 
 	env := frontend.GetEnvironment(ctx)
 	if env != nil {
-		dbConfig.UserID = null.StringFrom(env.UserId)
+		dbConfig.UserID = env.UserId
 	}
 
 	return dbConfig, nil
@@ -124,19 +132,17 @@ func apiConfigFromDbConfig(dbConfig *appdb.Configuration) (apiConfig apiserver.C
 	apiConfig.ApiAccessChangeMe = dbConfig.APIAccessChangeMe
 
 	apiConfig.Id = &dbConfig.ID
-	apiConfig.Enable = dbConfig.Enable.Ptr()
+	apiConfig.Enable = &dbConfig.Enable
 	apiConfig.RefreshInterval = dbConfig.RefreshInterval
 	apiConfig.RequestTimeout = &dbConfig.RequestTimeout
-	if dbConfig.AssetFilter.Valid {
-		var af [][]apiserver.FilterRule
-		if err := json.Unmarshal(dbConfig.AssetFilter.JSON, &af); err != nil {
-			return apiserver.Configuration{}, fmt.Errorf("unmarshalling assetFilter: %v", err)
-		}
-		apiConfig.AssetFilter = af
+	var af [][]apiserver.FilterRule
+	if err := json.Unmarshal(dbConfig.AssetFilter, &af); err != nil {
+		return apiserver.Configuration{}, fmt.Errorf("unmarshalling assetFilter: %v", err)
 	}
-	apiConfig.Active = dbConfig.Active.Ptr()
+	apiConfig.AssetFilter = af
+	apiConfig.Active = &dbConfig.Active
 	apiConfig.ProjectIDs = common.Ptr[[]string](dbConfig.ProjectIds)
-	apiConfig.UserId = dbConfig.UserID.Ptr()
+	apiConfig.UserId = &dbConfig.UserID
 	return apiConfig, nil
 }
 

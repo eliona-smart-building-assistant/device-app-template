@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/friendsofgo/errors"
-	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -29,11 +28,11 @@ type Configuration struct {
 	APIAccessChangeMe string            `boil:"api_access_change_me" json:"api_access_change_me" toml:"api_access_change_me" yaml:"api_access_change_me"`
 	RefreshInterval   int32             `boil:"refresh_interval" json:"refresh_interval" toml:"refresh_interval" yaml:"refresh_interval"`
 	RequestTimeout    int32             `boil:"request_timeout" json:"request_timeout" toml:"request_timeout" yaml:"request_timeout"`
-	AssetFilter       null.JSON         `boil:"asset_filter" json:"asset_filter,omitempty" toml:"asset_filter" yaml:"asset_filter,omitempty"`
-	Active            null.Bool         `boil:"active" json:"active,omitempty" toml:"active" yaml:"active,omitempty"`
-	Enable            null.Bool         `boil:"enable" json:"enable,omitempty" toml:"enable" yaml:"enable,omitempty"`
-	ProjectIds        types.StringArray `boil:"project_ids" json:"project_ids,omitempty" toml:"project_ids" yaml:"project_ids,omitempty"`
-	UserID            null.String       `boil:"user_id" json:"user_id,omitempty" toml:"user_id" yaml:"user_id,omitempty"`
+	AssetFilter       types.JSON        `boil:"asset_filter" json:"asset_filter" toml:"asset_filter" yaml:"asset_filter"`
+	Active            bool              `boil:"active" json:"active" toml:"active" yaml:"active"`
+	Enable            bool              `boil:"enable" json:"enable" toml:"enable" yaml:"enable"`
+	ProjectIds        types.StringArray `boil:"project_ids" json:"project_ids" toml:"project_ids" yaml:"project_ids"`
+	UserID            string            `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
 
 	R *configurationR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L configurationL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -108,61 +107,43 @@ func (w whereHelperint32) NIN(slice []int32) qm.QueryMod {
 	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
 }
 
-type whereHelpernull_JSON struct{ field string }
+type whereHelpertypes_JSON struct{ field string }
 
-func (w whereHelpernull_JSON) EQ(x null.JSON) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, false, x)
+func (w whereHelpertypes_JSON) EQ(x types.JSON) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.EQ, x)
 }
-func (w whereHelpernull_JSON) NEQ(x null.JSON) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, true, x)
+func (w whereHelpertypes_JSON) NEQ(x types.JSON) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.NEQ, x)
 }
-func (w whereHelpernull_JSON) LT(x null.JSON) qm.QueryMod {
+func (w whereHelpertypes_JSON) LT(x types.JSON) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.LT, x)
 }
-func (w whereHelpernull_JSON) LTE(x null.JSON) qm.QueryMod {
+func (w whereHelpertypes_JSON) LTE(x types.JSON) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.LTE, x)
 }
-func (w whereHelpernull_JSON) GT(x null.JSON) qm.QueryMod {
+func (w whereHelpertypes_JSON) GT(x types.JSON) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GT, x)
 }
-func (w whereHelpernull_JSON) GTE(x null.JSON) qm.QueryMod {
+func (w whereHelpertypes_JSON) GTE(x types.JSON) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GTE, x)
 }
 
-func (w whereHelpernull_JSON) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpernull_JSON) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
+type whereHelperbool struct{ field string }
 
-type whereHelpernull_Bool struct{ field string }
-
-func (w whereHelpernull_Bool) EQ(x null.Bool) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, false, x)
-}
-func (w whereHelpernull_Bool) NEQ(x null.Bool) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, true, x)
-}
-func (w whereHelpernull_Bool) LT(x null.Bool) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpernull_Bool) LTE(x null.Bool) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpernull_Bool) GT(x null.Bool) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpernull_Bool) GTE(x null.Bool) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
-
-func (w whereHelpernull_Bool) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpernull_Bool) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
+func (w whereHelperbool) EQ(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
+func (w whereHelperbool) NEQ(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
+func (w whereHelperbool) LT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
+func (w whereHelperbool) LTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
+func (w whereHelperbool) GT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
+func (w whereHelperbool) GTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
 
 type whereHelpertypes_StringArray struct{ field string }
 
 func (w whereHelpertypes_StringArray) EQ(x types.StringArray) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, false, x)
+	return qmhelper.Where(w.field, qmhelper.EQ, x)
 }
 func (w whereHelpertypes_StringArray) NEQ(x types.StringArray) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, true, x)
+	return qmhelper.Where(w.field, qmhelper.NEQ, x)
 }
 func (w whereHelpertypes_StringArray) LT(x types.StringArray) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.LT, x)
@@ -177,81 +158,26 @@ func (w whereHelpertypes_StringArray) GTE(x types.StringArray) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GTE, x)
 }
 
-func (w whereHelpertypes_StringArray) IsNull() qm.QueryMod { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpertypes_StringArray) IsNotNull() qm.QueryMod {
-	return qmhelper.WhereIsNotNull(w.field)
-}
-
-type whereHelpernull_String struct{ field string }
-
-func (w whereHelpernull_String) EQ(x null.String) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, false, x)
-}
-func (w whereHelpernull_String) NEQ(x null.String) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, true, x)
-}
-func (w whereHelpernull_String) LT(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpernull_String) LTE(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpernull_String) GT(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpernull_String) GTE(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
-func (w whereHelpernull_String) LIKE(x null.String) qm.QueryMod {
-	return qm.Where(w.field+" LIKE ?", x)
-}
-func (w whereHelpernull_String) NLIKE(x null.String) qm.QueryMod {
-	return qm.Where(w.field+" NOT LIKE ?", x)
-}
-func (w whereHelpernull_String) ILIKE(x null.String) qm.QueryMod {
-	return qm.Where(w.field+" ILIKE ?", x)
-}
-func (w whereHelpernull_String) NILIKE(x null.String) qm.QueryMod {
-	return qm.Where(w.field+" NOT ILIKE ?", x)
-}
-func (w whereHelpernull_String) IN(slice []string) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
-}
-func (w whereHelpernull_String) NIN(slice []string) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
-}
-
-func (w whereHelpernull_String) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpernull_String) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
-
 var ConfigurationWhere = struct {
 	ID                whereHelperint64
 	APIAccessChangeMe whereHelperstring
 	RefreshInterval   whereHelperint32
 	RequestTimeout    whereHelperint32
-	AssetFilter       whereHelpernull_JSON
-	Active            whereHelpernull_Bool
-	Enable            whereHelpernull_Bool
+	AssetFilter       whereHelpertypes_JSON
+	Active            whereHelperbool
+	Enable            whereHelperbool
 	ProjectIds        whereHelpertypes_StringArray
-	UserID            whereHelpernull_String
+	UserID            whereHelperstring
 }{
 	ID:                whereHelperint64{field: "\"app_name\".\"configuration\".\"id\""},
 	APIAccessChangeMe: whereHelperstring{field: "\"app_name\".\"configuration\".\"api_access_change_me\""},
 	RefreshInterval:   whereHelperint32{field: "\"app_name\".\"configuration\".\"refresh_interval\""},
 	RequestTimeout:    whereHelperint32{field: "\"app_name\".\"configuration\".\"request_timeout\""},
-	AssetFilter:       whereHelpernull_JSON{field: "\"app_name\".\"configuration\".\"asset_filter\""},
-	Active:            whereHelpernull_Bool{field: "\"app_name\".\"configuration\".\"active\""},
-	Enable:            whereHelpernull_Bool{field: "\"app_name\".\"configuration\".\"enable\""},
+	AssetFilter:       whereHelpertypes_JSON{field: "\"app_name\".\"configuration\".\"asset_filter\""},
+	Active:            whereHelperbool{field: "\"app_name\".\"configuration\".\"active\""},
+	Enable:            whereHelperbool{field: "\"app_name\".\"configuration\".\"enable\""},
 	ProjectIds:        whereHelpertypes_StringArray{field: "\"app_name\".\"configuration\".\"project_ids\""},
-	UserID:            whereHelpernull_String{field: "\"app_name\".\"configuration\".\"user_id\""},
+	UserID:            whereHelperstring{field: "\"app_name\".\"configuration\".\"user_id\""},
 }
 
 // ConfigurationRels is where relationship names are stored.
@@ -283,8 +209,8 @@ type configurationL struct{}
 
 var (
 	configurationAllColumns            = []string{"id", "api_access_change_me", "refresh_interval", "request_timeout", "asset_filter", "active", "enable", "project_ids", "user_id"}
-	configurationColumnsWithoutDefault = []string{"api_access_change_me"}
-	configurationColumnsWithDefault    = []string{"id", "refresh_interval", "request_timeout", "asset_filter", "active", "enable", "project_ids", "user_id"}
+	configurationColumnsWithoutDefault = []string{"api_access_change_me", "asset_filter", "project_ids", "user_id"}
+	configurationColumnsWithDefault    = []string{"id", "refresh_interval", "request_timeout", "active", "enable"}
 	configurationPrimaryKeyColumns     = []string{"id"}
 	configurationGeneratedColumns      = []string{}
 )
