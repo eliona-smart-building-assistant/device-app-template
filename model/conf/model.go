@@ -31,3 +31,12 @@ type FilterRule struct {
 	Parameter string
 	Regex     string
 }
+
+type Asset struct {
+	ID            int64
+	Config        Configuration
+	ProjectID     string
+	GlobalAssetID string
+	ProviderID    string
+	AssetID       int32
+}

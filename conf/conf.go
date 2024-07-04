@@ -186,23 +186,37 @@ func GetAssetId(ctx context.Context, config confmodel.Configuration, projId stri
 	return common.Ptr(dbAsset[0].AssetID.Int32), nil
 }
 
-func GetAssetById(assetId int32) (appdb.Asset, error) {
+func toAppAsset(dbAsset appdb.Asset, config confmodel.Configuration) confmodel.Asset {
+	return confmodel.Asset{
+		ID:            dbAsset.ID,
+		Config:        config,
+		ProjectID:     dbAsset.ProjectID,
+		GlobalAssetID: dbAsset.GlobalAssetID,
+		ProviderID:    dbAsset.ProviderID,
+		AssetID:       dbAsset.AssetID.Int32,
+	}
+}
+
+func GetAssetById(assetId int32) (confmodel.Asset, error) {
 	asset, err := appdb.Assets(
 		appdb.AssetWhere.AssetID.EQ(null.Int32From(assetId)),
 	).OneG(context.Background())
 	if err != nil {
-		return appdb.Asset{}, fmt.Errorf("fetching asset: %v", err)
+		return confmodel.Asset{}, fmt.Errorf("fetching asset: %v", err)
 	}
-	return *asset, nil
-}
-
-func GetConfigForAsset(asset appdb.Asset) (confmodel.Configuration, error) {
+	if !asset.AssetID.Valid {
+		return confmodel.Asset{}, fmt.Errorf("shouldn't happen: assetID is nil")
+	}
 	c, err := asset.Configuration().OneG(context.Background())
 	if errors.Is(err, sql.ErrNoRows) {
-		return confmodel.Configuration{}, ErrNotFound
+		return confmodel.Asset{}, ErrNotFound
 	}
 	if err != nil {
-		return confmodel.Configuration{}, fmt.Errorf("fetching configuration: %v", err)
+		return confmodel.Asset{}, fmt.Errorf("fetching configuration: %v", err)
 	}
-	return toAppConfig(c)
+	config, err := toAppConfig(c)
+	if err != nil {
+		return confmodel.Asset{}, fmt.Errorf("translating configuration: %v", err)
+	}
+	return toAppAsset(*asset, config), nil
 }

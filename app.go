@@ -18,7 +18,6 @@ package main
 import (
 	"app-name/apiserver"
 	"app-name/apiservices"
-	"app-name/appdb"
 	"app-name/conf"
 	"app-name/eliona"
 	confmodel "app-name/model/conf"
@@ -124,13 +123,8 @@ func listenForOutputChanges() {
 				log.Error("conf", "getting asset by assetID %v: %v", output.AssetId, err)
 				return
 			}
-			config, err := conf.GetConfigForAsset(asset)
-			if err != nil {
-				log.Error("conf", "getting configuration for asset id %v: %v", asset.AssetID.Int32, err)
-				return
-			}
-			if err := outputData(asset, config, output.Data); err != nil {
-				log.Error("conf", "outputting data (%v) for config %v and assetId %v: %v", output.Data, config.Id, asset.AssetID.Int32, err)
+			if err := outputData(asset, output.Data); err != nil {
+				log.Error("conf", "outputting data (%v) for config %v and assetId %v: %v", output.Data, asset.Config.Id, asset.AssetID, err)
 				return
 			}
 		}
@@ -139,7 +133,7 @@ func listenForOutputChanges() {
 }
 
 // outputData implements passing output data to broker. Remove if not needed.
-func outputData(asset appdb.Asset, config confmodel.Configuration, data map[string]interface{}) error {
+func outputData(asset confmodel.Asset, data map[string]interface{}) error {
 	// Do the output magic here.
 	return nil
 }
