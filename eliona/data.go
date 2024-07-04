@@ -16,10 +16,8 @@
 package eliona
 
 import (
-	"app-name/conf"
 	assetmodel "app-name/model/asset"
 	confmodel "app-name/model/conf"
-	"context"
 	"fmt"
 
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
@@ -32,7 +30,7 @@ func UpsertAssetData(config confmodel.Configuration, assets []assetmodel.Example
 	for _, projectId := range config.ProjectIDs {
 		for _, a := range assets {
 			log.Debug("Eliona", "upserting data for asset: config %d and asset '%v'", config.Id, a.GetGAI())
-			assetId, err := conf.GetAssetId(context.Background(), config, projectId, a.GetGAI())
+			assetId, err := a.GetAssetID(projectId)
 			if err != nil {
 				return err
 			}
