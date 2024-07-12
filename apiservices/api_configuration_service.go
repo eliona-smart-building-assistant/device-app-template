@@ -36,9 +36,13 @@ func NewConfigurationAPIService() apiserver.ConfigurationAPIServicer {
 }
 
 func (s *ConfigurationAPIService) GetConfigurations(ctx context.Context) (apiserver.ImplResponse, error) {
-	configs, err := conf.GetConfigs(ctx)
+	appConfigs, err := conf.GetConfigs(ctx)
 	if err != nil {
 		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
+	}
+	var configs []apiserver.Configuration
+	for _, appConfig := range appConfigs {
+		configs = append(configs, toAPIConfig(appConfig))
 	}
 	return apiserver.Response(http.StatusOK, configs), nil
 }
@@ -49,7 +53,7 @@ func (s *ConfigurationAPIService) PostConfiguration(ctx context.Context, config 
 	if err != nil {
 		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
 	}
-	return apiserver.Response(http.StatusCreated, insertedConfig), nil
+	return apiserver.Response(http.StatusCreated, toAPIConfig(insertedConfig)), nil
 }
 
 func (s *ConfigurationAPIService) GetConfigurationById(ctx context.Context, configId int64) (apiserver.ImplResponse, error) {
@@ -60,7 +64,7 @@ func (s *ConfigurationAPIService) GetConfigurationById(ctx context.Context, conf
 	if err != nil {
 		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
 	}
-	return apiserver.Response(http.StatusOK, config), nil
+	return apiserver.Response(http.StatusOK, toAPIConfig(config)), nil
 }
 
 func (s *ConfigurationAPIService) PutConfigurationById(ctx context.Context, configId int64, config apiserver.Configuration) (apiserver.ImplResponse, error) {
@@ -70,7 +74,7 @@ func (s *ConfigurationAPIService) PutConfigurationById(ctx context.Context, conf
 	if err != nil {
 		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
 	}
-	return apiserver.Response(http.StatusCreated, upsertedConfig), nil
+	return apiserver.Response(http.StatusCreated, toAPIConfig(upsertedConfig)), nil
 }
 
 func (s *ConfigurationAPIService) DeleteConfigurationById(ctx context.Context, configId int64) (apiserver.ImplResponse, error) {
