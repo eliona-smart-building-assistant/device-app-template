@@ -30,23 +30,23 @@ INSERT INTO public.eliona_app (app_name, enable)
 VALUES ('app-name', 't')
 ON CONFLICT (app_name) DO UPDATE SET initialized_at = null;
 
-DROP SCHEMA IF EXISTS app_name CASCADE;
+DROP SCHEMA IF EXISTS app_schema_name CASCADE;
 
 DELETE FROM heap
 WHERE asset_id IN (
     SELECT asset_id
     FROM asset
-    WHERE asset_type LIKE E'app\\_name\\_%'
+    WHERE asset_type LIKE E'app\\_schema\\_name\\_%'
 );
 
 DELETE FROM attribute_schema
-WHERE asset_type LIKE E'app\\_name\\_%';
+WHERE asset_type LIKE E'app\\_schema\\_name\\_%';
 
 DELETE FROM asset
-WHERE asset_type LIKE E'app\\_name\\_%';
+WHERE asset_type LIKE E'app\\_schema\\_name\\_%';
 
 DELETE FROM asset_type
-WHERE asset_type LIKE E'app\\_name\\_%';
+WHERE asset_type LIKE E'app\\_schema\\_name\\_%';
 
 DELETE FROM public.widget_data
 WHERE widget_id IN (
@@ -66,5 +66,5 @@ WHERE dashboard_id IN (
 DELETE FROM public.dashboard
 WHERE name LIKE 'App Name%';
 
--- DELETE FROM eliona_app WHERE app_name = 'app_name';
--- DELETE FROM eliona_store WHERE app_name = 'app_name';
+-- DELETE FROM eliona_app WHERE app_name = 'app-name';
+-- DELETE FROM eliona_store WHERE app_name = 'app-name';

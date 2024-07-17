@@ -13,7 +13,7 @@
 --  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 --  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-create schema if not exists app_name;
+create schema if not exists app_schema_name;
 
 --
 -- Todo: create tables and database objects necessary for this app like tables persisting configuration

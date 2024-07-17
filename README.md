@@ -3,7 +3,7 @@ Replace the following strings globally with the real app name:
 </mark>
 
 - `app-name` with app's name. Use `-` if the app name contains spaces. All letters are lower-cased.
-- `app_name` and `app\\_name` with app's name. Use `_` if the app name contains spaces. All letters are lower-cased.
+- `app_schema_name` and `app\\_schema\\_name` with app's name. Use `_` if the app name contains spaces. All letters are lower-cased.
 - `App Name` with app's real names. Letters can be mixed-cased, depends on using e.g. brand names.
 
 # Eliona App for App Name
@@ -44,9 +44,9 @@ This initialization can be handled by the `reset.sql` script.
 
 <mark>Todo: Decide if the app uses its own data and which data should be accessible from outside the app. This is always the case with configuration data. If so, the app needs its own API server to provide access to this data. To define the API use an openapi.yaml file and generators to build the server stub.</mark>
 
-The app requires configuration data that remains in the database. To do this, the app creates its own database schema `app_name` during initialization. To modify and handle the configuration data the app provides an API access. Have a look at the [API specification](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/app-name-app/develop/openapi.yaml) how the configuration tables should be used.
+The app requires configuration data that remains in the database. To do this, the app creates its own database schema `app_schema_name` during initialization. To modify and handle the configuration data the app provides an API access. Have a look at the [API specification](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/app-name-app/develop/openapi.yaml) how the configuration tables should be used.
 
-- `app_name.example_table`: <mark>Todo: Describe the database table in short.</mark>
+- `app_schema_name.example_table`: <mark>Todo: Describe the database table in short.</mark>
 
 **Generation**: to generate access method to database see Generation section below.
 
