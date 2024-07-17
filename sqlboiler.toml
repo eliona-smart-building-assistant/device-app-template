@@ -11,7 +11,7 @@ host   = "localhost"
 port   = 6001
 user   = "postgres"
 pass   = "secret"
-schema = "app_name"
+schema = "app_schema_name"
 sslmode = "disable"
 
 [[types]]
