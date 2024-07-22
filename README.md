@@ -75,7 +75,7 @@ The data is written for each device, structured into different subtypes of Elino
 
 ### Continuous asset creation ###
 
-Assets for all devices connected to the Template account are created automatically when the configuration is added.
+Assets for all devices connected to the App Name account are created automatically when the configuration is added.
 
 To select which assets to create, a filter could be specified in config. The schema of the filter is defined in the `openapi.yaml` file.
 
