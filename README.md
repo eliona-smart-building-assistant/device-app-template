@@ -66,7 +66,7 @@ The app provides its own API to access configuration data and other functions. T
 
 This app creates Eliona asset types and attribute sets during initialization.
 
-The data is written for each device, structured into different subtypes of Elinoa assets. The following subtypes are defined:
+The data is written for each device, structured into different subtypes of Eliona assets. The following subtypes are defined:
 
 - `Info`: Static data which provides information about a device like address and firmware info.
 - `Status`: Device status information, like battery level.
