@@ -109,4 +109,4 @@ For the database access [SQLBoiler](https://github.com/volatiletech/sqlboiler) i
 
 ### Generate asset type descriptions ###
 
-For generating asset type descriptions from field-tag-annotated structs, [asse-from-struct tool](https://github.com/eliona-smart-building-assistant/dev-utilities) can be used.
+For generating asset type descriptions from field-tag-annotated structs, [asset-from-struct tool](https://github.com/eliona-smart-building-assistant/dev-utilities) can be used.
