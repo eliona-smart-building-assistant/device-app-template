@@ -1,11 +1,3 @@
-<mark>
-Replace the following strings globally with the real app name:
-</mark>
-
-- `app-name` with app's name. Use `-` if the app name contains spaces. All letters are lower-cased.
-- `app_name` and `app\\_name` with app's name. Use `_` if the app name contains spaces. All letters are lower-cased.
-- `App Name` with app's real names. Letters can be mixed-cased, depends on using e.g. brand names.
-
 # App Name User Guide
 
 ### Introduction
