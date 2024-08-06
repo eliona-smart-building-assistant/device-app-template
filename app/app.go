@@ -13,7 +13,7 @@
 //  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main
+package app
 
 import (
 	apiserver "app-name/api/generated"
@@ -30,7 +30,7 @@ import (
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 )
 
-func initialization() {
+func Initialize() {
 	ctx := context.Background()
 
 	// Necessary to close used init resources
@@ -45,16 +45,16 @@ func initialization() {
 	)
 }
 
-// doAnything is the main app function which is called periodically
-func doAnything() {
+// DoAnything is the main app function which is called periodically
+func DoAnything() {
 
 	// Todo: implement everything the app should do
 	log.Debug("main", "do anything")
 
 }
 
-// listenApi starts the API server and listen for requests
-func listenApi() {
+// ListenApi starts the API server and listen for requests
+func ListenApi() {
 	err := http.ListenAndServe(":"+common.Getenv("API_SERVER_PORT", "3000"), utilshttp.NewCORSEnabledHandler(
 		apiserver.NewRouter(
 			apiserver.NewConfigurationAPIController(apiservices.NewConfigurationAPIService()),
