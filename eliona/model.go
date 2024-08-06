@@ -16,8 +16,8 @@
 package eliona
 
 import (
+	appmodel "app-name/app/model"
 	conf "app-name/db/helper"
-	confmodel "app-name/model/conf"
 	"context"
 	"fmt"
 
@@ -32,10 +32,10 @@ type ExampleDevice struct {
 	ID   string `eliona:"id" subtype:"info"`
 	Name string `eliona:"name,filterable" subtype:"info"`
 
-	Config *confmodel.Configuration
+	Config *appmodel.Configuration
 }
 
-func (d *ExampleDevice) AdheresToFilter(filter [][]confmodel.FilterRule) (bool, error) {
+func (d *ExampleDevice) AdheresToFilter(filter [][]appmodel.FilterRule) (bool, error) {
 	f := apiFilterToCommonFilter(filter)
 	fp, err := utils.StructToMap(d)
 	if err != nil {
@@ -87,7 +87,7 @@ type Root struct {
 	locationsMap map[string]ExampleDevice
 	devicesSlice []ExampleDevice
 
-	Config *confmodel.Configuration
+	Config *appmodel.Configuration
 }
 
 func (r *Root) GetName() string {
@@ -136,7 +136,7 @@ func (r *Root) GetFunctionalChildren() []asset.FunctionalNode {
 
 //
 
-func apiFilterToCommonFilter(input [][]confmodel.FilterRule) [][]common.FilterRule {
+func apiFilterToCommonFilter(input [][]appmodel.FilterRule) [][]common.FilterRule {
 	result := make([][]common.FilterRule, len(input))
 	for i := 0; i < len(input); i++ {
 		result[i] = make([]common.FilterRule, len(input[i]))

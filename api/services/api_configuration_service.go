@@ -17,8 +17,8 @@ package apiservices
 
 import (
 	apiserver "app-name/api/generated"
+	appmodel "app-name/app/model"
 	dbhelper "app-name/db/helper"
-	confmodel "app-name/model/conf"
 	"context"
 	"errors"
 	"net/http"
@@ -88,7 +88,7 @@ func (s *ConfigurationAPIService) DeleteConfigurationById(ctx context.Context, c
 	return apiserver.ImplResponse{Code: http.StatusNoContent}, nil
 }
 
-func toAPIConfig(appConfig confmodel.Configuration) apiserver.Configuration {
+func toAPIConfig(appConfig appmodel.Configuration) apiserver.Configuration {
 	return apiserver.Configuration{
 		Id:                &appConfig.Id,
 		ApiAccessChangeMe: appConfig.ApiAccessChangeMe,
@@ -102,7 +102,7 @@ func toAPIConfig(appConfig confmodel.Configuration) apiserver.Configuration {
 	}
 }
 
-func toAPIAssetFilter(appAF [][]confmodel.FilterRule) (result [][]apiserver.FilterRule) {
+func toAPIAssetFilter(appAF [][]appmodel.FilterRule) (result [][]apiserver.FilterRule) {
 	for _, outer := range appAF {
 		var innerResult []apiserver.FilterRule
 		for _, fr := range outer {
@@ -116,7 +116,7 @@ func toAPIAssetFilter(appAF [][]confmodel.FilterRule) (result [][]apiserver.Filt
 	return result
 }
 
-func toAppConfig(apiConfig apiserver.Configuration) (appConfig confmodel.Configuration) {
+func toAppConfig(apiConfig apiserver.Configuration) (appConfig appmodel.Configuration) {
 	appConfig.ApiAccessChangeMe = apiConfig.ApiAccessChangeMe
 
 	if apiConfig.Id != nil {
@@ -141,11 +141,11 @@ func toAppConfig(apiConfig apiserver.Configuration) (appConfig confmodel.Configu
 	return appConfig
 }
 
-func toAppAssetFilter(apiAF [][]apiserver.FilterRule) (result [][]confmodel.FilterRule) {
+func toAppAssetFilter(apiAF [][]apiserver.FilterRule) (result [][]appmodel.FilterRule) {
 	for _, outer := range apiAF {
-		var innerResult []confmodel.FilterRule
+		var innerResult []appmodel.FilterRule
 		for _, fr := range outer {
-			innerResult = append(innerResult, confmodel.FilterRule{
+			innerResult = append(innerResult, appmodel.FilterRule{
 				Parameter: fr.Parameter,
 				Regex:     fr.Regex,
 			})

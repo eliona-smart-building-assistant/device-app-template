@@ -16,7 +16,7 @@
 package eliona
 
 import (
-	confmodel "app-name/model/conf"
+	appmodel "app-name/app/model"
 	"fmt"
 
 	api "github.com/eliona-smart-building-assistant/go-eliona-api-client/v2"
@@ -25,7 +25,7 @@ import (
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 )
 
-func CreateAssets(config confmodel.Configuration, root asset.Root) error {
+func CreateAssets(config appmodel.Configuration, root asset.Root) error {
 	for _, projectId := range config.ProjectIDs {
 		assetsCreated, err := asset.CreateAssets(root, projectId)
 		if err != nil {

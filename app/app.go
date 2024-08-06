@@ -13,14 +13,14 @@
 //  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main
+package app
 
 import (
 	apiserver "app-name/api/generated"
 	apiservices "app-name/api/services"
+	appmodel "app-name/app/model"
 	dbhelper "app-name/db/helper"
 	"app-name/eliona"
-	confmodel "app-name/model/conf"
 	"context"
 	"net/http"
 	"sync"
@@ -36,7 +36,7 @@ import (
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 )
 
-func initialization() {
+func Initialize() {
 	ctx := context.Background()
 
 	// Necessary to close used init resources
@@ -53,7 +53,7 @@ func initialization() {
 
 var once sync.Once
 
-func collectData() {
+func CollectData() {
 	configs, err := dbhelper.GetConfigs(context.Background())
 	if err != nil {
 		log.Fatal("dbhelper", "Couldn't read configs from DB: %v", err)
@@ -88,7 +88,7 @@ func collectData() {
 				config.ProjectIDs)
 		}
 
-		common.RunOnceWithParam(func(config confmodel.Configuration) {
+		common.RunOnceWithParam(func(config appmodel.Configuration) {
 			log.Info("main", "Collecting %d started.", config.Id)
 			if err := collectResources(&config); err != nil {
 				return // Error is handled in the method itself.
@@ -100,13 +100,13 @@ func collectData() {
 	}
 }
 
-func collectResources(config *confmodel.Configuration) error {
+func collectResources(config *appmodel.Configuration) error {
 	// Do the magic here
 	return nil
 }
 
 // listenForOutputChanges listens to output attribute changes from Eliona. Delete if not needed.
-func listenForOutputChanges() {
+func ListenForOutputChanges() {
 	for { // We want to restart listening in case something breaks.
 		outputs, err := eliona.ListenForOutputChanges()
 		if err != nil {
@@ -133,13 +133,13 @@ func listenForOutputChanges() {
 }
 
 // outputData implements passing output data to broker. Remove if not needed.
-func outputData(asset confmodel.Asset, data map[string]interface{}) error {
+func outputData(asset appmodel.Asset, data map[string]interface{}) error {
 	// Do the output magic here.
 	return nil
 }
 
 // listenApi starts the API server and listen for requests
-func listenApi() {
+func ListenApi() {
 	err := http.ListenAndServe(":"+common.Getenv("API_SERVER_PORT", "3000"),
 		frontend.NewEnvironmentHandler(
 			utilshttp.NewCORSEnabledHandler(
