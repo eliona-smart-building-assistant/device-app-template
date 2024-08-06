@@ -16,8 +16,8 @@
 package main
 
 import (
-	"app-name/apiserver"
-	"app-name/apiservices"
+	apiserver "app-name/api/generated"
+	apiservices "app-name/api/services"
 	"context"
 	"github.com/eliona-smart-building-assistant/go-eliona/app"
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
