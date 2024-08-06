@@ -16,7 +16,6 @@
 package eliona
 
 import (
-	assetmodel "app-name/model/asset"
 	confmodel "app-name/model/conf"
 	"fmt"
 
@@ -26,7 +25,7 @@ import (
 
 const ClientReference string = "app-name"
 
-func UpsertAssetData(config confmodel.Configuration, assets []assetmodel.ExampleDevice) error {
+func UpsertAssetData(config confmodel.Configuration, assets []ExampleDevice) error {
 	for _, projectId := range config.ProjectIDs {
 		for _, a := range assets {
 			log.Debug("Eliona", "upserting data for asset: config %d and asset '%v'", config.Id, a.GetGAI())
