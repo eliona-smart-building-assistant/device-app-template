@@ -39,7 +39,7 @@ func initialization() {
 
 	// Init the app before the first run.
 	app.Init(conn, app.AppName(),
-		app.ExecSqlFile("conf/init.sql"),
+		app.ExecSqlFile("db/init.sql"),
 		asset.InitAssetTypeFiles("resources/asset-types/*.json"),
 		dashboard.InitWidgetTypeFiles("resources/widget-types/*.json"),
 	)
