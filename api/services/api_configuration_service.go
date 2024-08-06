@@ -16,7 +16,7 @@
 package apiservices
 
 import (
-	"app-name/apiserver"
+	apiserver "app-name/api/generated"
 	"app-name/conf"
 	confmodel "app-name/model/conf"
 	"context"

@@ -16,10 +16,10 @@
 package broker
 
 import (
-	"app-name/apiserver"
-	"app-name/model"
+	apiserver "app-name/api/generated"
+	assetmodel "app-name/model/asset"
 )
 
-func GetDevices(config apiserver.Configuration) (model.Root, error) {
-	return model.Root{}, nil
+func GetDevices(config apiserver.Configuration) (assetmodel.Root, error) {
+	return assetmodel.Root{}, nil
 }

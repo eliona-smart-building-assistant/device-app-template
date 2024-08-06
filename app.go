@@ -16,8 +16,8 @@
 package main
 
 import (
-	"app-name/apiserver"
-	"app-name/apiservices"
+	apiserver "app-name/api/generated"
+	apiservices "app-name/api/services"
 	"app-name/conf"
 	"app-name/eliona"
 	confmodel "app-name/model/conf"
