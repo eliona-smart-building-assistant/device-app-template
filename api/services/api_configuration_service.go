@@ -17,7 +17,7 @@ package apiservices
 
 import (
 	apiserver "app-name/api/generated"
-	"app-name/conf"
+	dbhelper "app-name/db/helper"
 	confmodel "app-name/model/conf"
 	"context"
 	"errors"
@@ -36,7 +36,7 @@ func NewConfigurationAPIService() apiserver.ConfigurationAPIServicer {
 }
 
 func (s *ConfigurationAPIService) GetConfigurations(ctx context.Context) (apiserver.ImplResponse, error) {
-	appConfigs, err := conf.GetConfigs(ctx)
+	appConfigs, err := dbhelper.GetConfigs(ctx)
 	if err != nil {
 		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
 	}
@@ -49,7 +49,7 @@ func (s *ConfigurationAPIService) GetConfigurations(ctx context.Context) (apiser
 
 func (s *ConfigurationAPIService) PostConfiguration(ctx context.Context, config apiserver.Configuration) (apiserver.ImplResponse, error) {
 	appConfig := toAppConfig(config)
-	insertedConfig, err := conf.InsertConfig(ctx, appConfig)
+	insertedConfig, err := dbhelper.InsertConfig(ctx, appConfig)
 	if err != nil {
 		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
 	}
@@ -57,8 +57,8 @@ func (s *ConfigurationAPIService) PostConfiguration(ctx context.Context, config 
 }
 
 func (s *ConfigurationAPIService) GetConfigurationById(ctx context.Context, configId int64) (apiserver.ImplResponse, error) {
-	config, err := conf.GetConfig(ctx, configId)
-	if errors.Is(err, conf.ErrNotFound) {
+	config, err := dbhelper.GetConfig(ctx, configId)
+	if errors.Is(err, dbhelper.ErrNotFound) {
 		return apiserver.ImplResponse{Code: http.StatusNotFound}, nil
 	}
 	if err != nil {
@@ -70,7 +70,7 @@ func (s *ConfigurationAPIService) GetConfigurationById(ctx context.Context, conf
 func (s *ConfigurationAPIService) PutConfigurationById(ctx context.Context, configId int64, config apiserver.Configuration) (apiserver.ImplResponse, error) {
 	config.Id = &configId
 	appConfig := toAppConfig(config)
-	upsertedConfig, err := conf.UpsertConfig(ctx, appConfig)
+	upsertedConfig, err := dbhelper.UpsertConfig(ctx, appConfig)
 	if err != nil {
 		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
 	}
@@ -78,8 +78,8 @@ func (s *ConfigurationAPIService) PutConfigurationById(ctx context.Context, conf
 }
 
 func (s *ConfigurationAPIService) DeleteConfigurationById(ctx context.Context, configId int64) (apiserver.ImplResponse, error) {
-	err := conf.DeleteConfig(ctx, configId)
-	if errors.Is(err, conf.ErrNotFound) {
+	err := dbhelper.DeleteConfig(ctx, configId)
+	if errors.Is(err, dbhelper.ErrNotFound) {
 		return apiserver.ImplResponse{Code: http.StatusNotFound}, nil
 	}
 	if err != nil {

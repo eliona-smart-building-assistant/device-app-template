@@ -18,7 +18,7 @@ package main
 import (
 	apiserver "app-name/api/generated"
 	apiservices "app-name/api/services"
-	"app-name/conf"
+	dbhelper "app-name/db/helper"
 	"app-name/eliona"
 	confmodel "app-name/model/conf"
 	"context"
@@ -45,7 +45,7 @@ func initialization() {
 
 	// Init the app before the first run.
 	app.Init(conn, app.AppName(),
-		app.ExecSqlFile("conf/init.sql"),
+		app.ExecSqlFile("db/init.sql"),
 		asset.InitAssetTypeFiles("resources/asset-types/*.json"),
 		dashboard.InitWidgetTypeFiles("resources/widget-types/*.json"),
 	)
@@ -54,14 +54,14 @@ func initialization() {
 var once sync.Once
 
 func collectData() {
-	configs, err := conf.GetConfigs(context.Background())
+	configs, err := dbhelper.GetConfigs(context.Background())
 	if err != nil {
-		log.Fatal("conf", "Couldn't read configs from DB: %v", err)
+		log.Fatal("dbhelper", "Couldn't read configs from DB: %v", err)
 		return
 	}
 	if len(configs) == 0 {
 		once.Do(func() {
-			log.Info("conf", "No configs in DB. Please configure the app in Eliona.")
+			log.Info("dbhelper", "No configs in DB. Please configure the app in Eliona.")
 		})
 		return
 	}
@@ -69,14 +69,14 @@ func collectData() {
 	for _, config := range configs {
 		if !config.Enable {
 			if config.Active {
-				conf.SetConfigActiveState(context.Background(), config, false)
+				dbhelper.SetConfigActiveState(context.Background(), config, false)
 			}
 			continue
 		}
 
 		if !config.Active {
-			conf.SetConfigActiveState(context.Background(), config, true)
-			log.Info("conf", "Collecting initialized with Configuration %d:\n"+
+			dbhelper.SetConfigActiveState(context.Background(), config, true)
+			log.Info("dbhelper", "Collecting initialized with Configuration %d:\n"+
 				"Enable: %t\n"+
 				"Refresh Interval: %d\n"+
 				"Request Timeout: %d\n"+
@@ -118,13 +118,13 @@ func listenForOutputChanges() {
 				// Just an echoed value this app sent.
 				continue
 			}
-			asset, err := conf.GetAssetById(output.AssetId)
+			asset, err := dbhelper.GetAssetById(output.AssetId)
 			if err != nil {
-				log.Error("conf", "getting asset by assetID %v: %v", output.AssetId, err)
+				log.Error("dbhelper", "getting asset by assetID %v: %v", output.AssetId, err)
 				return
 			}
 			if err := outputData(asset, output.Data); err != nil {
-				log.Error("conf", "outputting data (%v) for config %v and assetId %v: %v", output.Data, asset.Config.Id, asset.AssetID, err)
+				log.Error("dbhelper", "outputting data (%v) for config %v and assetId %v: %v", output.Data, asset.Config.Id, asset.AssetID, err)
 				return
 			}
 		}

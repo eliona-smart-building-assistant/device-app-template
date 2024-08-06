@@ -16,7 +16,7 @@
 package assetmodel
 
 import (
-	"app-name/conf"
+	conf "app-name/db/helper"
 	confmodel "app-name/model/conf"
 	"context"
 	"fmt"

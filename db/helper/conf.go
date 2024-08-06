@@ -13,10 +13,10 @@
 //  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package conf
+package dbhelper
 
 import (
-	"app-name/appdb"
+	dbgen "app-name/db/generated"
 	confmodel "app-name/model/conf"
 	"context"
 	"database/sql"
@@ -56,8 +56,8 @@ func UpsertConfig(ctx context.Context, config confmodel.Configuration) (confmode
 }
 
 func GetConfig(ctx context.Context, configID int64) (confmodel.Configuration, error) {
-	dbConfig, err := appdb.Configurations(
-		appdb.ConfigurationWhere.ID.EQ(configID),
+	dbConfig, err := dbgen.Configurations(
+		dbgen.ConfigurationWhere.ID.EQ(configID),
 	).OneG(ctx)
 	if errors.Is(err, sql.ErrNoRows) {
 		return confmodel.Configuration{}, ErrNotFound
@@ -73,13 +73,13 @@ func GetConfig(ctx context.Context, configID int64) (confmodel.Configuration, er
 }
 
 func DeleteConfig(ctx context.Context, configID int64) error {
-	if _, err := appdb.Assets(
-		appdb.AssetWhere.ConfigurationID.EQ(configID),
+	if _, err := dbgen.Assets(
+		dbgen.AssetWhere.ConfigurationID.EQ(configID),
 	).DeleteAllG(ctx); err != nil {
 		return fmt.Errorf("deleting assets from database: %v", err)
 	}
-	count, err := appdb.Configurations(
-		appdb.ConfigurationWhere.ID.EQ(configID),
+	count, err := dbgen.Configurations(
+		dbgen.ConfigurationWhere.ID.EQ(configID),
 	).DeleteAllG(ctx)
 	if err != nil {
 		return fmt.Errorf("deleting config from database: %v", err)
@@ -93,7 +93,7 @@ func DeleteConfig(ctx context.Context, configID int64) error {
 	return nil
 }
 
-func toDbConfig(ctx context.Context, appConfig confmodel.Configuration) (dbConfig appdb.Configuration, err error) {
+func toDbConfig(ctx context.Context, appConfig confmodel.Configuration) (dbConfig dbgen.Configuration, err error) {
 	dbConfig.APIAccessChangeMe = appConfig.ApiAccessChangeMe
 
 	dbConfig.ID = appConfig.Id
@@ -101,7 +101,7 @@ func toDbConfig(ctx context.Context, appConfig confmodel.Configuration) (dbConfi
 	dbConfig.RequestTimeout = appConfig.RequestTimeout
 	af, err := json.Marshal(appConfig.AssetFilter)
 	if err != nil {
-		return appdb.Configuration{}, fmt.Errorf("marshalling assetFilter: %v", err)
+		return dbgen.Configuration{}, fmt.Errorf("marshalling assetFilter: %v", err)
 	}
 	dbConfig.AssetFilter = af
 	dbConfig.Active = appConfig.Active
@@ -116,7 +116,7 @@ func toDbConfig(ctx context.Context, appConfig confmodel.Configuration) (dbConfi
 	return dbConfig, nil
 }
 
-func toAppConfig(dbConfig *appdb.Configuration) (appConfig confmodel.Configuration, err error) {
+func toAppConfig(dbConfig *dbgen.Configuration) (appConfig confmodel.Configuration, err error) {
 	appConfig.ApiAccessChangeMe = dbConfig.APIAccessChangeMe
 
 	appConfig.Id = dbConfig.ID
@@ -135,7 +135,7 @@ func toAppConfig(dbConfig *appdb.Configuration) (appConfig confmodel.Configurati
 }
 
 func GetConfigs(ctx context.Context) ([]confmodel.Configuration, error) {
-	dbConfigs, err := appdb.Configurations().AllG(ctx)
+	dbConfigs, err := dbgen.Configurations().AllG(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -151,21 +151,21 @@ func GetConfigs(ctx context.Context) ([]confmodel.Configuration, error) {
 }
 
 func SetConfigActiveState(ctx context.Context, config confmodel.Configuration, state bool) (int64, error) {
-	return appdb.Configurations(
-		appdb.ConfigurationWhere.ID.EQ(config.Id),
-	).UpdateAllG(ctx, appdb.M{
-		appdb.ConfigurationColumns.Active: state,
+	return dbgen.Configurations(
+		dbgen.ConfigurationWhere.ID.EQ(config.Id),
+	).UpdateAllG(ctx, dbgen.M{
+		dbgen.ConfigurationColumns.Active: state,
 	})
 }
 
 func SetAllConfigsInactive(ctx context.Context) (int64, error) {
-	return appdb.Configurations().UpdateAllG(ctx, appdb.M{
-		appdb.ConfigurationColumns.Active: false,
+	return dbgen.Configurations().UpdateAllG(ctx, dbgen.M{
+		dbgen.ConfigurationColumns.Active: false,
 	})
 }
 
 func InsertAsset(ctx context.Context, config confmodel.Configuration, projId string, globalAssetID string, assetId int32, providerId string) error {
-	var dbAsset appdb.Asset
+	var dbAsset dbgen.Asset
 	dbAsset.ConfigurationID = config.Id
 	dbAsset.ProjectID = projId
 	dbAsset.GlobalAssetID = globalAssetID
@@ -175,10 +175,10 @@ func InsertAsset(ctx context.Context, config confmodel.Configuration, projId str
 }
 
 func GetAssetId(ctx context.Context, config confmodel.Configuration, projId string, globalAssetID string) (*int32, error) {
-	dbAsset, err := appdb.Assets(
-		appdb.AssetWhere.ConfigurationID.EQ(config.Id),
-		appdb.AssetWhere.ProjectID.EQ(projId),
-		appdb.AssetWhere.GlobalAssetID.EQ(globalAssetID),
+	dbAsset, err := dbgen.Assets(
+		dbgen.AssetWhere.ConfigurationID.EQ(config.Id),
+		dbgen.AssetWhere.ProjectID.EQ(projId),
+		dbgen.AssetWhere.GlobalAssetID.EQ(globalAssetID),
 	).AllG(ctx)
 	if err != nil || len(dbAsset) == 0 {
 		return nil, err
@@ -186,7 +186,7 @@ func GetAssetId(ctx context.Context, config confmodel.Configuration, projId stri
 	return common.Ptr(dbAsset[0].AssetID.Int32), nil
 }
 
-func toAppAsset(dbAsset appdb.Asset, config confmodel.Configuration) confmodel.Asset {
+func toAppAsset(dbAsset dbgen.Asset, config confmodel.Configuration) confmodel.Asset {
 	return confmodel.Asset{
 		ID:            dbAsset.ID,
 		Config:        config,
@@ -198,8 +198,8 @@ func toAppAsset(dbAsset appdb.Asset, config confmodel.Configuration) confmodel.A
 }
 
 func GetAssetById(assetId int32) (confmodel.Asset, error) {
-	asset, err := appdb.Assets(
-		appdb.AssetWhere.AssetID.EQ(null.Int32From(assetId)),
+	asset, err := dbgen.Assets(
+		dbgen.AssetWhere.AssetID.EQ(null.Int32From(assetId)),
 	).OneG(context.Background())
 	if err != nil {
 		return confmodel.Asset{}, fmt.Errorf("fetching asset: %v", err)
