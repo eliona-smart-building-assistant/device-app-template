@@ -105,7 +105,7 @@ func collectResources(config *appmodel.Configuration) error {
 	return nil
 }
 
-// listenForOutputChanges listens to output attribute changes from Eliona. Delete if not needed.
+// ListenForOutputChanges listens to output attribute changes from Eliona. Delete if not needed.
 func ListenForOutputChanges() {
 	for { // We want to restart listening in case something breaks.
 		outputs, err := eliona.ListenForOutputChanges()
@@ -138,7 +138,7 @@ func outputData(asset appmodel.Asset, data map[string]interface{}) error {
 	return nil
 }
 
-// listenApi starts the API server and listen for requests
+// ListenApi starts the API server and listen for requests
 func ListenApi() {
 	err := http.ListenAndServe(":"+common.Getenv("API_SERVER_PORT", "3000"),
 		frontend.NewEnvironmentHandler(
