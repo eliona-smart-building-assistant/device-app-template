@@ -16,7 +16,7 @@
 package apiservices
 
 import (
-	"app-name/apiserver"
+	apiserver "app-name/api/generated"
 	"context"
 	"errors"
 	"net/http"

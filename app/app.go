@@ -13,24 +13,25 @@
 //  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main
+package app
 
 import (
-	"app-name/apiserver"
-	"app-name/apiservices"
+	apiserver "app-name/api/generated"
+	apiservices "app-name/api/services"
 	"context"
+	"net/http"
+
 	"github.com/eliona-smart-building-assistant/go-eliona/app"
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-eliona/dashboard"
 	"github.com/eliona-smart-building-assistant/go-utils/db"
-	"net/http"
 
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	utilshttp "github.com/eliona-smart-building-assistant/go-utils/http"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 )
 
-func initialization() {
+func Initialize() {
 	ctx := context.Background()
 
 	// Necessary to close used init resources
@@ -39,22 +40,22 @@ func initialization() {
 
 	// Init the app before the first run.
 	app.Init(conn, app.AppName(),
-		app.ExecSqlFile("conf/init.sql"),
+		app.ExecSqlFile("db/init.sql"),
 		asset.InitAssetTypeFiles("resources/asset-types/*.json"),
 		dashboard.InitWidgetTypeFiles("resources/widget-types/*.json"),
 	)
 }
 
-// doAnything is the main app function which is called periodically
-func doAnything() {
+// DoAnything is the main app function which is called periodically
+func DoAnything() {
 
 	// Todo: implement everything the app should do
 	log.Debug("main", "do anything")
 
 }
 
-// listenApi starts the API server and listen for requests
-func listenApi() {
+// ListenApi starts the API server and listen for requests
+func ListenApi() {
 	err := http.ListenAndServe(":"+common.Getenv("API_SERVER_PORT", "3000"), utilshttp.NewCORSEnabledHandler(
 		apiserver.NewRouter(
 			apiserver.NewConfigurationAPIController(apiservices.NewConfigurationAPIService()),
