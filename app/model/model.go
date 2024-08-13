@@ -13,13 +13,30 @@
 //  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package broker
+package appmodel
 
-import (
-	assetmodel "app-name/model/asset"
-	confmodel "app-name/model/conf"
-)
+type Configuration struct {
+	Id                int64
+	ApiAccessChangeMe string
+	RefreshInterval   int32
+	RequestTimeout    int32
+	AssetFilter       [][]FilterRule
+	Enable            bool
+	Active            bool
+	ProjectIDs        []string
+	UserId            string
+}
 
-func GetDevices(config confmodel.Configuration) (assetmodel.Root, error) {
-	return assetmodel.Root{}, nil
+type FilterRule struct {
+	Parameter string
+	Regex     string
+}
+
+type Asset struct {
+	ID            int64
+	Config        Configuration
+	ProjectID     string
+	GlobalAssetID string
+	ProviderID    string
+	AssetID       int32
 }
