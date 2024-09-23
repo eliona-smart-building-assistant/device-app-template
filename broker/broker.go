@@ -16,10 +16,10 @@
 package broker
 
 import (
-	assetmodel "app-name/model/asset"
-	confmodel "app-name/model/conf"
+	appmodel "app-name/app/model"
+	"app-name/eliona"
 )
 
-func GetDevices(config confmodel.Configuration) (assetmodel.Root, error) {
-	return assetmodel.Root{}, nil
+func GetDevices(config appmodel.Configuration) (eliona.Root, error) {
+	return eliona.Root{}, nil
 }
