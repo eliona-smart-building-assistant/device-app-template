@@ -34,8 +34,8 @@ type CustomizationAPIRouter interface {
 // The VersionAPIRouter implementation should parse necessary information from the http request,
 // pass the data to a VersionAPIServicer to perform the required actions, then write the service results to the http response.
 type VersionAPIRouter interface {
-	GetOpenAPI(http.ResponseWriter, *http.Request)
 	GetVersion(http.ResponseWriter, *http.Request)
+	GetOpenAPI(http.ResponseWriter, *http.Request)
 }
 
 // ConfigurationAPIServicer defines the api actions for the ConfigurationAPI service
@@ -60,6 +60,6 @@ type CustomizationAPIServicer interface {
 // while the service implementation can be ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
 type VersionAPIServicer interface {
-	GetOpenAPI(context.Context) (ImplResponse, error)
 	GetVersion(context.Context) (ImplResponse, error)
+	GetOpenAPI(context.Context) (ImplResponse, error)
 }
