@@ -53,16 +53,6 @@ func NewConfigurationAPIController(s ConfigurationAPIServicer, opts ...Configura
 // Routes returns all the api routes for the ConfigurationAPIController
 func (c *ConfigurationAPIController) Routes() Routes {
 	return Routes{
-		"DeleteConfigurationById": Route{
-			strings.ToUpper("Delete"),
-			"/v1/configs/{config-id}",
-			c.DeleteConfigurationById,
-		},
-		"GetConfigurationById": Route{
-			strings.ToUpper("Get"),
-			"/v1/configs/{config-id}",
-			c.GetConfigurationById,
-		},
 		"GetConfigurations": Route{
 			strings.ToUpper("Get"),
 			"/v1/configs",
@@ -73,54 +63,22 @@ func (c *ConfigurationAPIController) Routes() Routes {
 			"/v1/configs",
 			c.PostConfiguration,
 		},
+		"GetConfigurationById": Route{
+			strings.ToUpper("Get"),
+			"/v1/configs/{config-id}",
+			c.GetConfigurationById,
+		},
 		"PutConfigurationById": Route{
 			strings.ToUpper("Put"),
 			"/v1/configs/{config-id}",
 			c.PutConfigurationById,
 		},
+		"DeleteConfigurationById": Route{
+			strings.ToUpper("Delete"),
+			"/v1/configs/{config-id}",
+			c.DeleteConfigurationById,
+		},
 	}
-}
-
-// DeleteConfigurationById - Deletes a configuration
-func (c *ConfigurationAPIController) DeleteConfigurationById(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	configIdParam, err := parseNumericParameter[int64](
-		params["config-id"],
-		WithRequire[int64](parseInt64),
-	)
-	if err != nil {
-		c.errorHandler(w, r, &ParsingError{Param: "config-id", Err: err}, nil)
-		return
-	}
-	result, err := c.service.DeleteConfigurationById(r.Context(), configIdParam)
-	// If an error occurred, encode the error with the status code
-	if err != nil {
-		c.errorHandler(w, r, err, &result)
-		return
-	}
-	// If no error, encode the body and the result code
-	_ = EncodeJSONResponse(result.Body, &result.Code, w)
-}
-
-// GetConfigurationById - Get configuration
-func (c *ConfigurationAPIController) GetConfigurationById(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	configIdParam, err := parseNumericParameter[int64](
-		params["config-id"],
-		WithRequire[int64](parseInt64),
-	)
-	if err != nil {
-		c.errorHandler(w, r, &ParsingError{Param: "config-id", Err: err}, nil)
-		return
-	}
-	result, err := c.service.GetConfigurationById(r.Context(), configIdParam)
-	// If an error occurred, encode the error with the status code
-	if err != nil {
-		c.errorHandler(w, r, err, &result)
-		return
-	}
-	// If no error, encode the body and the result code
-	_ = EncodeJSONResponse(result.Body, &result.Code, w)
 }
 
 // GetConfigurations - Get configurations
@@ -162,6 +120,27 @@ func (c *ConfigurationAPIController) PostConfiguration(w http.ResponseWriter, r 
 	_ = EncodeJSONResponse(result.Body, &result.Code, w)
 }
 
+// GetConfigurationById - Get configuration
+func (c *ConfigurationAPIController) GetConfigurationById(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	configIdParam, err := parseNumericParameter[int64](
+		params["config-id"],
+		WithRequire[int64](parseInt64),
+	)
+	if err != nil {
+		c.errorHandler(w, r, &ParsingError{Param: "config-id", Err: err}, nil)
+		return
+	}
+	result, err := c.service.GetConfigurationById(r.Context(), configIdParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	_ = EncodeJSONResponse(result.Body, &result.Code, w)
+}
+
 // PutConfigurationById - Updates a configuration
 func (c *ConfigurationAPIController) PutConfigurationById(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -189,6 +168,27 @@ func (c *ConfigurationAPIController) PutConfigurationById(w http.ResponseWriter,
 		return
 	}
 	result, err := c.service.PutConfigurationById(r.Context(), configIdParam, configurationParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	_ = EncodeJSONResponse(result.Body, &result.Code, w)
+}
+
+// DeleteConfigurationById - Deletes a configuration
+func (c *ConfigurationAPIController) DeleteConfigurationById(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	configIdParam, err := parseNumericParameter[int64](
+		params["config-id"],
+		WithRequire[int64](parseInt64),
+	)
+	if err != nil {
+		c.errorHandler(w, r, &ParsingError{Param: "config-id", Err: err}, nil)
+		return
+	}
+	result, err := c.service.DeleteConfigurationById(r.Context(), configIdParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
