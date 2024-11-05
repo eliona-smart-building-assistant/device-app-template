@@ -48,22 +48,22 @@ func NewVersionAPIController(s VersionAPIServicer, opts ...VersionAPIOption) *Ve
 // Routes returns all the api routes for the VersionAPIController
 func (c *VersionAPIController) Routes() Routes {
 	return Routes{
-		"GetOpenAPI": Route{
-			strings.ToUpper("Get"),
-			"/v1/version/openapi.json",
-			c.GetOpenAPI,
-		},
 		"GetVersion": Route{
 			strings.ToUpper("Get"),
 			"/v1/version",
 			c.GetVersion,
 		},
+		"GetOpenAPI": Route{
+			strings.ToUpper("Get"),
+			"/v1/version/openapi.json",
+			c.GetOpenAPI,
+		},
 	}
 }
 
-// GetOpenAPI - OpenAPI specification for this API version
-func (c *VersionAPIController) GetOpenAPI(w http.ResponseWriter, r *http.Request) {
-	result, err := c.service.GetOpenAPI(r.Context())
+// GetVersion - Version of the API
+func (c *VersionAPIController) GetVersion(w http.ResponseWriter, r *http.Request) {
+	result, err := c.service.GetVersion(r.Context())
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
@@ -73,9 +73,9 @@ func (c *VersionAPIController) GetOpenAPI(w http.ResponseWriter, r *http.Request
 	_ = EncodeJSONResponse(result.Body, &result.Code, w)
 }
 
-// GetVersion - Version of the API
-func (c *VersionAPIController) GetVersion(w http.ResponseWriter, r *http.Request) {
-	result, err := c.service.GetVersion(r.Context())
+// GetOpenAPI - OpenAPI specification for this API version
+func (c *VersionAPIController) GetOpenAPI(w http.ResponseWriter, r *http.Request) {
+	result, err := c.service.GetOpenAPI(r.Context())
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
