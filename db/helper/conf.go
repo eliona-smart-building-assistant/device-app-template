@@ -56,9 +56,7 @@ func UpsertConfig(ctx context.Context, config appmodel.Configuration) (appmodel.
 }
 
 func GetConfig(ctx context.Context, configID int64) (appmodel.Configuration, error) {
-	dbConfig, err := dbgen.Configurations(
-		dbgen.ConfigurationWhere.ID.EQ(configID),
-	).OneG(ctx)
+	dbConfig, err := dbgen.FindConfigurationG(ctx, configID)
 	if errors.Is(err, sql.ErrNoRows) {
 		return appmodel.Configuration{}, ErrNotFound
 	}
@@ -198,9 +196,7 @@ func toAppAsset(dbAsset dbgen.Asset, config appmodel.Configuration) appmodel.Ass
 }
 
 func GetAssetById(assetId int32) (appmodel.Asset, error) {
-	asset, err := dbgen.Assets(
-		dbgen.AssetWhere.AssetID.EQ(null.Int32From(assetId)),
-	).OneG(context.Background())
+	asset, err := dbgen.FindAssetG(context.Background(), int64(assetId))
 	if err != nil {
 		return appmodel.Asset{}, fmt.Errorf("fetching asset: %v", err)
 	}
