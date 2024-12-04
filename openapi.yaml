@@ -21,7 +21,7 @@ info:
   description: API to access and configure the App Name app
 externalDocs:
   description: Find out more about the App Name app
-  url: https://github.com/eliona-smart-building-assistant/app-name-app
+  url: https://doc.eliona.io/collection/eliona-english/eliona-apps/apps/app-name
 servers:
   - url: "https://{server}/v1"
     variables:
