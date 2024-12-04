@@ -21,7 +21,7 @@ info:
   description: API to access and configure the App Name app
 externalDocs:
   description: Find out more about the App Name app
-  url: https://github.com/eliona-smart-building-assistant/app-name-app
+  url: https://doc.eliona.io/collection/eliona-english/eliona-apps/apps/app-name
 servers:
   - url: "https://{server}/v1"
     variables:
@@ -64,7 +64,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Configuration'
+                  $ref: "#/components/schemas/Configuration"
     post:
       tags:
         - Configuration
@@ -75,14 +75,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Configuration'
+              $ref: "#/components/schemas/Configuration"
       responses:
         "201":
           description: Successfully created a configuration
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Configuration'
+                $ref: "#/components/schemas/Configuration"
 
   /version:
     get:
@@ -145,7 +145,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/eliona-smart-building-assistant/eliona-api/main/openapi.yaml#/components/schemas/Dashboard'
+                $ref: "https://raw.githubusercontent.com/eliona-smart-building-assistant/eliona-api/main/openapi.yaml#/components/schemas/Dashboard"
         "404":
           description: Template name not found
 

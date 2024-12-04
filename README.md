@@ -2,9 +2,9 @@
 Replace the following strings globally with the real app name:
 </mark>
 
-- `app-name` with app's name. Use `-` if the app name contains spaces. All letters are lower-cased.
-- `app_schema_name` and `app\\_schema\\_name` with app's name. Use `_` if the app name contains spaces. All letters are lower-cased.
-- `App Name` with app's real names. Letters can be mixed-cased, depends on using e.g. brand names.
+- `app-name` with app's repo name. Use `-` if the app name contains spaces or other separators (such as dots). All letters are lower-cased. For names containing dots, adapt the documentation links.
+- `app_schema_name` and `app\\_schema\\_name` with app's db schema name. Use `_` if the app name contains spaces. All letters are lower-cased.
+- `App Name` with app's real name. Letters can be mixed-cased, depends on using e.g. brand names.
 
 # Eliona App for App Name
 
