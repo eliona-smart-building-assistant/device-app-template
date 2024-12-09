@@ -36,7 +36,7 @@ type ExampleDevice struct {
 }
 
 func (d *ExampleDevice) AdheresToFilter(filter [][]appmodel.FilterRule) (bool, error) {
-	f := apiFilterToCommonFilter(filter)
+	f := appFilterToCommonFilter(filter)
 	fp, err := utils.StructToMap(d)
 	if err != nil {
 		return false, fmt.Errorf("converting struct to map: %v", err)
@@ -136,7 +136,7 @@ func (r *Root) GetFunctionalChildren() []asset.FunctionalNode {
 
 //
 
-func apiFilterToCommonFilter(input [][]appmodel.FilterRule) [][]common.FilterRule {
+func appFilterToCommonFilter(input [][]appmodel.FilterRule) [][]common.FilterRule {
 	result := make([][]common.FilterRule, len(input))
 	for i := 0; i < len(input); i++ {
 		result[i] = make([]common.FilterRule, len(input[i]))
