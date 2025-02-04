@@ -95,7 +95,7 @@ func (c *ConfigurationAPIController) GetConfigurations(w http.ResponseWriter, r 
 
 // PostConfiguration - Creates a configuration
 func (c *ConfigurationAPIController) PostConfiguration(w http.ResponseWriter, r *http.Request) {
-	configurationParam := Configuration{}
+	var configurationParam Configuration
 	d := json.NewDecoder(r.Body)
 	d.DisallowUnknownFields()
 	if err := d.Decode(&configurationParam); err != nil && !errors.Is(err, io.EOF) {
@@ -152,7 +152,7 @@ func (c *ConfigurationAPIController) PutConfigurationById(w http.ResponseWriter,
 		c.errorHandler(w, r, &ParsingError{Param: "config-id", Err: err}, nil)
 		return
 	}
-	configurationParam := Configuration{}
+	var configurationParam Configuration
 	d := json.NewDecoder(r.Body)
 	d.DisallowUnknownFields()
 	if err := d.Decode(&configurationParam); err != nil && !errors.Is(err, io.EOF) {
