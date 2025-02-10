@@ -34,7 +34,7 @@ type Configuration struct {
 	// Set to `true` by the app when running and to `false` when app is stopped
 	Active *bool `json:"active,omitempty"`
 
-	// List of Eliona project ids for which this device should collect data. For each project id all smart devices are automatically created as an asset in Eliona. The mapping between Eliona is stored as an asset mapping in the KentixONE app.
+	// List of Eliona project ids for which this device should collect data. For each project id all smart devices are automatically created as an asset in Eliona. The mapping between Eliona is stored as an asset mapping in the App Name app.
 	ProjectIDs *[]string `json:"projectIDs,omitempty"`
 
 	// ID of the last Eliona user who created or updated the configuration
