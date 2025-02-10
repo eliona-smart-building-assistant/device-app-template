@@ -20,6 +20,11 @@ import (
 	"app-name/eliona"
 )
 
+func TestAuthentication(config appmodel.Configuration) error {
+	// TODO: Do some basic request requiring correct authentication.
+	return nil
+}
+
 func GetDevices(config appmodel.Configuration) (eliona.Root, error) {
 	return eliona.Root{}, nil
 }
