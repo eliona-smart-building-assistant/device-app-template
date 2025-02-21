@@ -1,0 +1,15 @@
+# BobGen configuration equivalent to sqlboiler.toml
+wipe: true # Equivalent to sqlboiler's `wipe = true`
+no_tests: true # Equivalent to `no-tests = true`
+no_factory: false # No equivalent in SQLBoiler, keeping default (false)
+no_back_referencing: false # No equivalent in SQLBoiler, keeping default (false)
+
+# Struct Tag Configuration
+struct_tag_casing: "snake" # Default value
+relation_tag: "relation" # Default value, adjust if needed
+
+# Database Configuration (PostgreSQL)
+psql:
+  dsn: "postgres://postgres:secret@localhost:6001/postgres?sslmode=disable"
+  schemas: ["app_schema_name"]
+  pkgname: "models"
