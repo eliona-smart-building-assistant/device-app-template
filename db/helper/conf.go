@@ -23,88 +23,149 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/eliona-smart-building-assistant/go-eliona/frontend"
-	"github.com/eliona-smart-building-assistant/go-utils/common"
-	"github.com/volatiletech/null/v8"
-	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
 var ErrBadRequest = errors.New("bad request")
 var ErrNotFound = errors.New("not found")
 
-func InsertConfig(ctx context.Context, config appmodel.Configuration) (appmodel.Configuration, error) {
-	dbConfig, err := toDbConfig(ctx, config)
-	if err != nil {
-		return appmodel.Configuration{}, fmt.Errorf("creating DB config from App config: %v", err)
-	}
-	if err := dbConfig.InsertG(ctx, boil.Infer()); err != nil {
-		return appmodel.Configuration{}, fmt.Errorf("inserting DB config: %v", err)
-	}
-	return config, nil
+// DBHelper is a singleton struct managing the database connection and queries.
+type DBHelper struct {
+	db      *sql.DB
+	queries *dbgen.Queries
 }
 
-func UpsertConfig(ctx context.Context, config appmodel.Configuration) (appmodel.Configuration, error) {
-	dbConfig, err := toDbConfig(ctx, config)
-	if err != nil {
-		return appmodel.Configuration{}, fmt.Errorf("creating DB config from App config: %v", err)
+var (
+	instance *DBHelper
+)
+
+// InitDB initializes the database connection ONCE.
+func InitDB(db *sql.DB) {
+	instance = &DBHelper{
+		db:      db,
+		queries: dbgen.New(db), // Create sqlc Queries instance
 	}
-	if err := dbConfig.UpsertG(ctx, true, []string{"id"}, boil.Blacklist("id"), boil.Infer()); err != nil {
-		return appmodel.Configuration{}, fmt.Errorf("inserting DB config: %v", err)
-	}
-	return config, nil
 }
 
-func GetConfig(ctx context.Context, configID int64) (appmodel.Configuration, error) {
-	dbConfig, err := dbgen.FindConfigurationG(ctx, configID)
-	if errors.Is(err, sql.ErrNoRows) {
-		return appmodel.Configuration{}, ErrNotFound
+// GetDB returns the singleton database instance.
+func GetDB() *DBHelper {
+	if instance == nil {
+		log.Fatal("Database not initialized. Call InitDB() first.")
 	}
-	if err != nil {
-		return appmodel.Configuration{}, fmt.Errorf("fetching config from database: %v", err)
-	}
-	appConfig, err := toAppConfig(dbConfig)
-	if err != nil {
-		return appmodel.Configuration{}, fmt.Errorf("creating App config from DB config: %v", err)
-	}
-	return appConfig, nil
+	return instance
 }
 
-func DeleteConfig(ctx context.Context, configID int64) error {
-	if _, err := dbgen.Assets(
-		dbgen.AssetWhere.ConfigurationID.EQ(configID),
-	).DeleteAllG(ctx); err != nil {
-		return fmt.Errorf("deleting assets from database: %v", err)
+// GetQueries returns the sqlc Queries instance.
+func GetQueries() *dbgen.Queries {
+	if instance == nil {
+		log.Fatal("Database not initialized. Call InitDB() first.")
 	}
-	count, err := dbgen.Configurations(
-		dbgen.ConfigurationWhere.ID.EQ(configID),
-	).DeleteAllG(ctx)
-	if err != nil {
-		return fmt.Errorf("deleting config from database: %v", err)
-	}
-	if count > 1 {
-		return fmt.Errorf("shouldn't happen: deleted more (%v) configs by ID", count)
-	}
-	if count == 0 {
-		return ErrNotFound
+	return instance.queries
+}
+
+// CloseDB gracefully shuts down the database connection.
+func CloseDB() error {
+	if instance != nil && instance.db != nil {
+		return instance.db.Close()
 	}
 	return nil
 }
 
-func toDbConfig(ctx context.Context, appConfig appmodel.Configuration) (dbConfig dbgen.Configuration, err error) {
-	dbConfig.APIAccessChangeMe = appConfig.ApiAccessChangeMe
+// Insert a new configuration using sqlc-generated queries
+func InsertConfig(ctx context.Context, config appmodel.Configuration) (appmodel.Configuration, error) {
+	dbConfig, err := toDbConfig(ctx, config)
+	if err != nil {
+		return appmodel.Configuration{}, fmt.Errorf("creating DB config: %v", err)
+	}
+	queries := GetQueries()
+	insertedConfig, err := queries.InsertConfig(ctx,
+		dbgen.InsertConfigParams{
+			ApiAccessChangeMe: dbConfig.ApiAccessChangeMe,
+			RefreshInterval:   dbConfig.RefreshInterval,
+			RequestTimeout:    dbConfig.RequestTimeout,
+			AssetFilter:       dbConfig.AssetFilter,
+			Active:            dbConfig.Active,
+			Enable:            dbConfig.Enable,
+			ProjectIds:        dbConfig.ProjectIds,
+			UserID:            dbConfig.UserID,
+		})
+	if err != nil {
+		return appmodel.Configuration{}, fmt.Errorf("inserting DB config: %v", err)
+	}
 
-	dbConfig.ID = appConfig.Id
-	dbConfig.RefreshInterval = appConfig.RefreshInterval
-	dbConfig.RequestTimeout = appConfig.RequestTimeout
+	return toAppConfig(insertedConfig)
+}
+
+// Upsert (insert or update) a configuration
+func UpsertConfig(ctx context.Context, config appmodel.Configuration) (appmodel.Configuration, error) {
+	dbConfig, err := toDbConfig(ctx, config)
+	if err != nil {
+		return appmodel.Configuration{}, fmt.Errorf("creating DB config: %v", err)
+	}
+
+	queries := GetQueries()
+
+	upsertedConfig, err := queries.UpsertConfig(ctx,
+		dbgen.UpsertConfigParams{
+			ID:                dbConfig.ID,
+			ApiAccessChangeMe: dbConfig.ApiAccessChangeMe,
+			RefreshInterval:   dbConfig.RefreshInterval,
+			RequestTimeout:    dbConfig.RequestTimeout,
+			AssetFilter:       dbConfig.AssetFilter,
+			Active:            dbConfig.Active,
+			Enable:            dbConfig.Enable,
+			ProjectIds:        dbConfig.ProjectIds,
+			UserID:            dbConfig.UserID,
+		})
+	if err != nil {
+		return appmodel.Configuration{}, fmt.Errorf("upserting DB config: %v", err)
+	}
+
+	return toAppConfig(upsertedConfig)
+}
+
+// Fetch a configuration by ID
+func GetConfig(ctx context.Context, configID int64) (appmodel.Configuration, error) {
+	queries := GetQueries()
+	dbConfig, err := queries.GetConfig(ctx, configID)
+	if errors.Is(err, sql.ErrNoRows) {
+		return appmodel.Configuration{}, ErrNotFound
+	}
+	if err != nil {
+		return appmodel.Configuration{}, fmt.Errorf("fetching config: %v", err)
+	}
+	return toAppConfig(dbConfig)
+}
+
+// Delete a configuration
+func DeleteConfig(ctx context.Context, configID int64) error {
+	queries := GetQueries()
+	err := queries.DeleteConfig(ctx, configID)
+	if err != nil {
+		return fmt.Errorf("deleting config: %v", err)
+	}
+	return nil
+}
+
+// Convert an application configuration to a database configuration for insertion/upsert
+func toDbConfig(ctx context.Context, appConfig appmodel.Configuration) (dbgen.AppSchemaNameConfiguration, error) {
 	af, err := json.Marshal(appConfig.AssetFilter)
 	if err != nil {
-		return dbgen.Configuration{}, fmt.Errorf("marshalling assetFilter: %v", err)
+		return dbgen.AppSchemaNameConfiguration{}, fmt.Errorf("marshalling assetFilter: %v", err)
 	}
-	dbConfig.AssetFilter = af
-	dbConfig.Active = appConfig.Active
-	dbConfig.Enable = appConfig.Enable
-	dbConfig.ProjectIds = appConfig.ProjectIDs
+
+	dbConfig := dbgen.AppSchemaNameConfiguration{
+		ID:                appConfig.Id,
+		ApiAccessChangeMe: appConfig.ApiAccessChangeMe,
+		RefreshInterval:   appConfig.RefreshInterval,
+		RequestTimeout:    appConfig.RequestTimeout,
+		AssetFilter:       af,
+		Active:            appConfig.Active,
+		Enable:            appConfig.Enable,
+		ProjectIds:        appConfig.ProjectIDs,
+	}
 
 	env := frontend.GetEnvironment(ctx)
 	if env != nil {
@@ -114,77 +175,108 @@ func toDbConfig(ctx context.Context, appConfig appmodel.Configuration) (dbConfig
 	return dbConfig, nil
 }
 
-func toAppConfig(dbConfig *dbgen.Configuration) (appConfig appmodel.Configuration, err error) {
-	appConfig.ApiAccessChangeMe = dbConfig.APIAccessChangeMe
-
-	appConfig.Id = dbConfig.ID
-	appConfig.Enable = dbConfig.Enable
-	appConfig.RefreshInterval = dbConfig.RefreshInterval
-	appConfig.RequestTimeout = dbConfig.RequestTimeout
+// Convert a database configuration to an application model
+func toAppConfig(dbConfig dbgen.AppSchemaNameConfiguration) (appmodel.Configuration, error) {
 	var af [][]appmodel.FilterRule
 	if err := json.Unmarshal(dbConfig.AssetFilter, &af); err != nil {
 		return appmodel.Configuration{}, fmt.Errorf("unmarshalling assetFilter: %v", err)
 	}
-	appConfig.AssetFilter = af
-	appConfig.Active = dbConfig.Active
-	appConfig.ProjectIDs = dbConfig.ProjectIds
-	appConfig.UserId = dbConfig.UserID
-	return appConfig, nil
+
+	return appmodel.Configuration{
+		ApiAccessChangeMe: dbConfig.ApiAccessChangeMe,
+		Id:                dbConfig.ID,
+		Enable:            dbConfig.Enable,
+		RefreshInterval:   dbConfig.RefreshInterval,
+		RequestTimeout:    dbConfig.RequestTimeout,
+		AssetFilter:       af,
+		Active:            dbConfig.Active,
+		ProjectIDs:        dbConfig.ProjectIds,
+		UserId:            dbConfig.UserID,
+	}, nil
 }
 
+// Fetch all configurations
 func GetConfigs(ctx context.Context) ([]appmodel.Configuration, error) {
-	dbConfigs, err := dbgen.Configurations().AllG(ctx)
+	queries := GetQueries()
+	dbConfigs, err := queries.GetConfigs(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("fetching configs: %v", err)
 	}
+
 	var appConfigs []appmodel.Configuration
 	for _, dbConfig := range dbConfigs {
 		ac, err := toAppConfig(dbConfig)
 		if err != nil {
-			return nil, fmt.Errorf("creating App config from DB config: %v", err)
+			return nil, fmt.Errorf("converting config: %v", err)
 		}
 		appConfigs = append(appConfigs, ac)
 	}
 	return appConfigs, nil
 }
 
-func SetConfigActiveState(ctx context.Context, config appmodel.Configuration, state bool) (int64, error) {
-	return dbgen.Configurations(
-		dbgen.ConfigurationWhere.ID.EQ(config.Id),
-	).UpdateAllG(ctx, dbgen.M{
-		dbgen.ConfigurationColumns.Active: state,
+// Update a specific configuration's active state
+func SetConfigActiveState(ctx context.Context, config appmodel.Configuration, state bool) error {
+	queries := GetQueries()
+	return queries.SetConfigActiveState(ctx, dbgen.SetConfigActiveStateParams{
+		ID:     config.Id,
+		Active: state,
 	})
 }
 
-func SetAllConfigsInactive(ctx context.Context) (int64, error) {
-	return dbgen.Configurations().UpdateAllG(ctx, dbgen.M{
-		dbgen.ConfigurationColumns.Active: false,
-	})
+// Set all configurations inactive
+func SetAllConfigsInactive(ctx context.Context) error {
+	queries := GetQueries()
+	return queries.SetAllConfigsInactive(ctx)
 }
 
+// Insert a new asset into the database
 func InsertAsset(ctx context.Context, config appmodel.Configuration, projId string, globalAssetID string, assetId int32, providerId string) error {
-	var dbAsset dbgen.Asset
-	dbAsset.ConfigurationID = config.Id
-	dbAsset.ProjectID = projId
-	dbAsset.GlobalAssetID = globalAssetID
-	dbAsset.AssetID = null.Int32From(assetId)
-	dbAsset.ProviderID = providerId
-	return dbAsset.InsertG(ctx, boil.Infer())
+	queries := GetQueries()
+	return queries.InsertAsset(ctx, dbgen.InsertAssetParams{
+		ConfigurationID: config.Id,
+		ProjectID:       projId,
+		GlobalAssetID:   globalAssetID,
+		ProviderID:      providerId,
+		AssetID:         sql.NullInt32{Int32: assetId, Valid: true},
+	})
 }
 
+// Retrieve an asset ID by configuration, project, and global asset ID
 func GetAssetId(ctx context.Context, config appmodel.Configuration, projId string, globalAssetID string) (*int32, error) {
-	dbAsset, err := dbgen.Assets(
-		dbgen.AssetWhere.ConfigurationID.EQ(config.Id),
-		dbgen.AssetWhere.ProjectID.EQ(projId),
-		dbgen.AssetWhere.GlobalAssetID.EQ(globalAssetID),
-	).AllG(ctx)
-	if err != nil || len(dbAsset) == 0 {
+	queries := GetQueries()
+	assetID, err := queries.GetAssetId(ctx, dbgen.GetAssetIdParams{
+		ConfigurationID: config.Id,
+		ProjectID:       projId,
+		GlobalAssetID:   globalAssetID,
+	})
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, err
 	}
-	return common.Ptr(dbAsset[0].AssetID.Int32), nil
+	if assetID.Valid {
+		return nil, nil
+	}
+	return &assetID.Int32, nil
 }
 
-func toAppAsset(dbAsset dbgen.Asset, config appmodel.Configuration) appmodel.Asset {
+// Fetch an asset by ID including its related configuration
+func GetAssetById(assetId int32) (appmodel.Asset, error) {
+	queries := GetQueries()
+	row, err := queries.GetAssetById(context.Background(), int64(assetId))
+	if errors.Is(err, sql.ErrNoRows) {
+		return appmodel.Asset{}, ErrNotFound
+	}
+	if err != nil {
+		return appmodel.Asset{}, fmt.Errorf("fetching asset: %v", err)
+	}
+
+	return toAppAssetFromRow(row)
+}
+
+// Convert a database asset to an application model asset
+func toAppAsset(dbAsset dbgen.AppSchemaNameAsset, config appmodel.Configuration) appmodel.Asset {
 	return appmodel.Asset{
 		ID:            dbAsset.ID,
 		Config:        config,
@@ -195,24 +287,35 @@ func toAppAsset(dbAsset dbgen.Asset, config appmodel.Configuration) appmodel.Ass
 	}
 }
 
-func GetAssetById(assetId int32) (appmodel.Asset, error) {
-	asset, err := dbgen.FindAssetG(context.Background(), int64(assetId))
-	if err != nil {
-		return appmodel.Asset{}, fmt.Errorf("fetching asset: %v", err)
+func toAppAssetFromRow(row dbgen.GetAssetByIdRow) (appmodel.Asset, error) {
+	// Convert the AssetFilter field (JSON) into the expected [][]appmodel.FilterRule type
+	var assetFilter [][]appmodel.FilterRule
+	if err := json.Unmarshal(row.AssetFilter, &assetFilter); err != nil {
+		return appmodel.Asset{}, fmt.Errorf("unmarshalling asset filter: %v", err)
 	}
-	if !asset.AssetID.Valid {
-		return appmodel.Asset{}, fmt.Errorf("shouldn't happen: assetID is nil")
+
+	// Construct the Configuration object
+	config := appmodel.Configuration{
+		ApiAccessChangeMe: row.ApiAccessChangeMe,
+		Id:                row.ID_2, // Configuration ID
+		Enable:            row.Enable,
+		RefreshInterval:   row.RefreshInterval,
+		RequestTimeout:    row.RequestTimeout,
+		AssetFilter:       assetFilter,
+		Active:            row.Active,
+		ProjectIDs:        row.ProjectIds,
+		UserId:            row.UserID,
 	}
-	c, err := asset.Configuration().OneG(context.Background())
-	if errors.Is(err, sql.ErrNoRows) {
-		return appmodel.Asset{}, ErrNotFound
+
+	// Construct the Asset object
+	asset := appmodel.Asset{
+		ID:            row.ID, // Asset ID
+		Config:        config, // Configuration struct
+		ProjectID:     row.ProjectID,
+		GlobalAssetID: row.GlobalAssetID,
+		ProviderID:    row.ProviderID,
+		AssetID:       row.AssetID.Int32, // Extracting value from sql.NullInt32
 	}
-	if err != nil {
-		return appmodel.Asset{}, fmt.Errorf("fetching configuration: %v", err)
-	}
-	config, err := toAppConfig(c)
-	if err != nil {
-		return appmodel.Asset{}, fmt.Errorf("translating configuration: %v", err)
-	}
-	return toAppAsset(*asset, config), nil
+
+	return asset, nil
 }
