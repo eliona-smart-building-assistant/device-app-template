@@ -1,9 +1,3 @@
-go install github.com/volatiletech/sqlboiler/v4@latest
-go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql@latest
-
-go get github.com/volatiletech/sqlboiler/v4
-go get github.com/volatiletech/null/v8
-
 # Read the content of init.sql
 INIT_SQL_CONTENT=$(<"${PWD}/db/init.sql")
 
@@ -18,7 +12,7 @@ COMMIT;
 EOF
 
 docker run -d \
-    --name "app_sql_boiler_code_generation" \
+    --name "app_jet_code_generation" \
     --platform "linux/amd64" \
     -e "POSTGRES_PASSWORD=secret" \
     -p "6001:5432" \
@@ -28,17 +22,15 @@ docker run -d \
 # Wait for PostgreSQL to initialize
 sleep 5
 
-sqlboiler psql \
-    -c db/sqlboiler.toml \
-    --wipe --no-tests
+go run ./tools/db-generator/main.go -dsn="postgres://postgres:secret@localhost:6001/postgres?sslmode=disable" -schema="app_schema_name" -path="./db/generated"
 
-docker stop "app_sql_boiler_code_generation" > /dev/null
+docker stop "app_jet_code_generation" > /dev/null
 
-docker logs "app_sql_boiler_code_generation" 2>&1 | grep "ERROR" || {
+docker logs "app_jet_code_generation" 2>&1 | grep "ERROR" || {
     echo "All good."
 }
 
-docker rm "app_sql_boiler_code_generation" > /dev/null
+docker rm "app_jet_code_generation" > /dev/null
 
 rm ./db/init_wrapper.sql
 
