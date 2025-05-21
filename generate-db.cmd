@@ -1,6 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 
+go install github.com/eliona-smart-building-assistant/dev-utilities/cmd/db-generator@latest
+
 :: Read the content of init.sql
 set "INIT_SQL_CONTENT="
 for /f "delims=" %%i in ('type "%CD%\db\init.sql"') do (
@@ -28,7 +30,7 @@ docker run -d ^
 timeout /t 5 >nul
 
 :: Run Go code generator
-go run .\tools\db-generator\main.go -dsn="postgres://postgres:secret@localhost:6001/postgres?sslmode=disable" -schema="app_schema_name" -path=".\db\generated"
+db-generator -dsn="postgres://postgres:secret@localhost:6001/postgres?sslmode=disable" -schema="app_schema_name" -path=".\db\generated"
 
 :: Stop and clean up the container
 docker stop "app_jet_code_generation" >nul 2>&1
