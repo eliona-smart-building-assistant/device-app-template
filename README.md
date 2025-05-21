@@ -100,7 +100,7 @@ For the API server the [OpenAPI Generator](https://openapi-generator.tech/docs/g
 
 ### Generate Database access ###
 
-For the database access [SQLBoiler](https://github.com/volatiletech/sqlboiler) is used. The easiest way to generate the database files is to use one of the predefined generation script which use the SQLBoiler implementation.
+For the database access [Jet](https://github.com/go-jet/jet) is used. The easiest way to generate the database files is to use one of the predefined generation script which use the Jet implementation.
 
 ```
 .\generate-db.cmd # Windows
