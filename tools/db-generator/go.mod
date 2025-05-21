@@ -2,7 +2,10 @@ module app-name/tools/db-generator
 
 go 1.24
 
-require github.com/go-jet/jet/v2 v2.13.0
+require (
+	github.com/go-jet/jet/v2 v2.13.0
+	github.com/lib/pq v1.10.9
+)
 
 require (
 	github.com/kr/pretty v0.3.0 // indirect
@@ -21,7 +24,7 @@ require (
 	github.com/jackc/pgtype v1.14.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
-	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/crypto v0.38.0 // indirect
+	golang.org/x/text v0.25.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
