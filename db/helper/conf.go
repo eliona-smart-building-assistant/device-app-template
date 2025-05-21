@@ -165,7 +165,6 @@ func GetConfig(ctx context.Context, id int64) (appmodel.Configuration, error) {
 func DeleteConfig(ctx context.Context, id int64) error {
 	stmt := Configuration.DELETE().
 		WHERE(Configuration.ID.EQ(Int(id)))
-
 	r, err := stmt.ExecContext(ctx, GetDB().db)
 	if err != nil {
 		return err
