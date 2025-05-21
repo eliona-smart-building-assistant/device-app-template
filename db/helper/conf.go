@@ -30,6 +30,7 @@ import (
 	"app-name/db/generated/postgres/app_schema_name/model"
 	. "app-name/db/generated/postgres/app_schema_name/table"
 
+	"github.com/go-jet/jet/postgres"
 	. "github.com/go-jet/jet/v2/postgres"
 )
 
@@ -74,31 +75,36 @@ func UpsertConfig(ctx context.Context, config appmodel.Configuration) (appmodel.
 		return appmodel.Configuration{}, fmt.Errorf("marshalling asset filter: %w", err)
 	}
 
+	commonColumns := postgres.ColumnList{
+		Configuration.APIAccessChangeMe,
+		Configuration.RefreshInterval,
+		Configuration.RequestTimeout,
+		Configuration.AssetFilter,
+		Configuration.Active,
+		Configuration.Enable,
+		Configuration.ProjectIds,
+		Configuration.UserID,
+	}
+
+	commonValues := []interface{}{
+		config.ApiAccessChangeMe,
+		config.RefreshInterval,
+		config.RequestTimeout,
+		Json(af),
+		config.Active,
+		config.Enable,
+		pq.StringArray(config.ProjectIDs),
+		frontend.GetEnvironment(ctx).UserId,
+	}
+
 	stmt := Configuration.INSERT()
-	// TODO: There might be a better way to solve this?
+
 	if config.Id != 0 {
 		// If ID is provided, include it in the INSERT
-		stmt = Configuration.INSERT(
-			Configuration.ID,
-			Configuration.APIAccessChangeMe,
-			Configuration.RefreshInterval,
-			Configuration.RequestTimeout,
-			Configuration.AssetFilter,
-			Configuration.Active,
-			Configuration.Enable,
-			Configuration.ProjectIds,
-			Configuration.UserID,
-		).VALUES(
-			config.Id,
-			config.ApiAccessChangeMe,
-			config.RefreshInterval,
-			config.RequestTimeout,
-			Json(af),
-			config.Active,
-			config.Enable,
-			pq.StringArray(config.ProjectIDs),
-			frontend.GetEnvironment(ctx).UserId,
-		).ON_CONFLICT(
+		columns := append(postgres.ColumnList{Configuration.ID}, commonColumns...)
+		values := append([]interface{}{config.Id}, commonValues...)
+
+		stmt = Configuration.INSERT(columns...).VALUES(values[0], values[1:]...).ON_CONFLICT(
 			Configuration.ID,
 		).DO_UPDATE(
 			SET(
@@ -113,30 +119,10 @@ func UpsertConfig(ctx context.Context, config appmodel.Configuration) (appmodel.
 		)
 	} else {
 		// If ID is 0, omit it to allow auto-increment
-		stmt = Configuration.INSERT(
-			Configuration.APIAccessChangeMe,
-			Configuration.RefreshInterval,
-			Configuration.RequestTimeout,
-			Configuration.AssetFilter,
-			Configuration.Active,
-			Configuration.Enable,
-			Configuration.ProjectIds,
-			Configuration.UserID,
-		).VALUES(
-			config.ApiAccessChangeMe,
-			config.RefreshInterval,
-			config.RequestTimeout,
-			Json(af),
-			config.Active,
-			config.Enable,
-			pq.StringArray(config.ProjectIDs),
-			frontend.GetEnvironment(ctx).UserId,
-		)
+		stmt = Configuration.INSERT(commonColumns...).VALUES(commonValues[0], commonValues[1:]...)
 	}
 
-	stmt = stmt.RETURNING(
-		Configuration.AllColumns,
-	)
+	stmt = stmt.RETURNING(Configuration.AllColumns)
 
 	var updatedConfig model.Configuration
 	err = stmt.QueryContext(ctx, GetDB().db, &updatedConfig)

@@ -7,6 +7,7 @@ require (
 	github.com/eliona-smart-building-assistant/go-eliona v1.10.8
 	github.com/eliona-smart-building-assistant/go-eliona-api-client/v2 v2.8.2
 	github.com/eliona-smart-building-assistant/go-utils v1.1.6
+	github.com/go-jet/jet v2.3.0+incompatible
 	github.com/go-jet/jet/v2 v2.13.0
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.3
