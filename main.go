@@ -33,8 +33,8 @@ func main() {
 
 	// Set default database to use boil.*G functions.
 	database := db.Database(elionaapp.AppName())
-	defer database.Close()
 	dbhelper.InitDB(database)
+	defer dbhelper.CloseDB()
 
 	// Necessary to close used init resources, because db.Pool() is used in this app.
 	defer db.ClosePool()
