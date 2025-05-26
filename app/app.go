@@ -24,6 +24,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"reflect"
 	"sync"
 	"time"
 
@@ -66,7 +67,12 @@ func Initialize() {
 	)
 }
 
-var once sync.Once
+var (
+	once             sync.Once
+	configChangeChan = make(chan struct{})
+	previousConfigs  = make(map[int64]appmodel.Configuration)
+	configMutex      sync.Mutex
+)
 
 func CollectData() {
 	configs, err := dbhelper.GetConfigs(context.Background())
@@ -104,21 +110,57 @@ func CollectData() {
 				config.ProjectIDs)
 		}
 
+		// Check for changes in this specific config
+		if isConfigChanged(config) {
+			configChangeChan <- struct{}{}
+		}
+
+		ctx, cancel := context.WithCancel(context.Background())
 		common.RunOnceWithParam(func(config appmodel.Configuration) {
 			log.Info("main", "Collecting %d started.", config.Id)
-			if err := collectResources(&config); err != nil {
+			if err := collectResources(ctx, &config); err != nil {
 				changeAppStatus(statusError)
-				return // Error is handled in the method itself.
+				cancel() // Cancel the context to stop the long-running processes
+				return   // Error is handled in the method itself.
 			}
 			log.Info("main", "Collecting %d finished.", config.Id)
 			changeAppStatus(statusOK)
 
-			time.Sleep(time.Second * time.Duration(config.RefreshInterval))
+			// Wait for the next interval or a config change
+			select {
+			case <-time.After(time.Second * time.Duration(config.RefreshInterval)):
+				// Continue with the next iteration
+				return
+			case <-configChangeChan:
+				// Config changed, restart the process
+				cancel() // Cancel the context to stop the long-running process
+				return
+			}
 		}, config, config.Id)
 	}
 }
 
-func collectResources(config *appmodel.Configuration) error {
+func isConfigChanged(newConfig appmodel.Configuration) bool {
+	configMutex.Lock()
+	defer configMutex.Unlock()
+
+	oldConfig, exists := previousConfigs[newConfig.Id]
+	if !exists {
+		// New config added
+		previousConfigs[newConfig.Id] = newConfig
+		return true
+	}
+
+	if !reflect.DeepEqual(newConfig, oldConfig) {
+		// Config changed
+		previousConfigs[newConfig.Id] = newConfig
+		return true
+	}
+
+	return false
+}
+
+func collectResources(ctx context.Context, config *appmodel.Configuration) error {
 	// Do the magic here
 	return nil
 }
