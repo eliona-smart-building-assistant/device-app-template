@@ -30,7 +30,6 @@ import (
 	"app-name/db/generated/postgres/app_schema_name/model"
 	. "app-name/db/generated/postgres/app_schema_name/table"
 
-	"github.com/go-jet/jet/postgres"
 	. "github.com/go-jet/jet/v2/postgres"
 )
 
@@ -75,7 +74,7 @@ func UpsertConfig(ctx context.Context, config appmodel.Configuration) (appmodel.
 		return appmodel.Configuration{}, fmt.Errorf("marshalling asset filter: %w", err)
 	}
 
-	commonColumns := postgres.ColumnList{
+	commonColumns := ColumnList{
 		Configuration.APIAccessChangeMe,
 		Configuration.RefreshInterval,
 		Configuration.RequestTimeout,
@@ -101,10 +100,10 @@ func UpsertConfig(ctx context.Context, config appmodel.Configuration) (appmodel.
 
 	if config.Id != 0 {
 		// If ID is provided, include it in the INSERT
-		columns := append(postgres.ColumnList{Configuration.ID}, commonColumns...)
+		columns := append(commonColumns, Configuration.ID)
 		values := append([]interface{}{config.Id}, commonValues...)
 
-		stmt = Configuration.INSERT(columns...).VALUES(values[0], values[1:]...).ON_CONFLICT(
+		stmt = Configuration.INSERT(columns).VALUES(values[0], values[1:]...).ON_CONFLICT(
 			Configuration.ID,
 		).DO_UPDATE(
 			SET(
@@ -119,7 +118,7 @@ func UpsertConfig(ctx context.Context, config appmodel.Configuration) (appmodel.
 		)
 	} else {
 		// If ID is 0, omit it to allow auto-increment
-		stmt = Configuration.INSERT(commonColumns...).VALUES(commonValues[0], commonValues[1:]...)
+		stmt = Configuration.INSERT(commonColumns).VALUES(commonValues[0], commonValues[1:]...)
 	}
 
 	stmt = stmt.RETURNING(Configuration.AllColumns)
