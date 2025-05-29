@@ -113,9 +113,9 @@ func (s *VersionAPIService) GetVersion(ctx context.Context) (apiserver.ImplRespo
 	return apiserver.Response(http.StatusOK, common.Ptr(version())), nil
 }
 
-func version() map[string]any {
-	return map[string]any{
-		"timestamp": BuildTimestamp,
-		"commit":    GitCommit,
+func version() apiserver.Version {
+	return apiserver.Version{
+		Timestamp: BuildTimestamp,
+		Commit:    GitCommit,
 	}
 }
