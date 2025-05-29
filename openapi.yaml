@@ -299,6 +299,10 @@ components:
     Version:
       type: object
       properties:
+        version:
+          type: string
+          description: Version of the aplication.
+          example: "v1.2.3"
         timestamp:
           type: string
           description: Build timestamp of the application.

@@ -12,6 +12,9 @@ package apiserver
 
 type Version struct {
 
+	// Version of the aplication.
+	Version string `json:"version,omitempty"`
+
 	// Build timestamp of the application.
 	Timestamp string `json:"timestamp,omitempty"`
 
