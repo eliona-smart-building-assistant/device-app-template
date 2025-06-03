@@ -112,7 +112,12 @@ func CollectData() {
 
 		// Check for changes in this specific config
 		if isConfigChanged(config) {
-			configChangeChan <- struct{}{}
+			select {
+			case configChangeChan <- struct{}{}: // Non-blocking send
+				log.Debug("app", "Config changed signal sent")
+			default:
+				log.Debug("app", "Config change signal not sent, channel full")
+			}
 		}
 
 		ctx, cancel := context.WithCancel(context.Background())
