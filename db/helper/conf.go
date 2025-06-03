@@ -31,6 +31,7 @@ import (
 	. "app-name/db/generated/postgres/app_schema_name/table"
 
 	. "github.com/go-jet/jet/v2/postgres"
+	"github.com/go-jet/jet/v2/qrm"
 )
 
 // DBHelper is a singleton struct managing the database connection and queries.
@@ -138,7 +139,7 @@ func GetConfig(ctx context.Context, id int64) (appmodel.Configuration, error) {
 		SELECT(Configuration.AllColumns).
 		WHERE(Configuration.ID.EQ(Int(id))).
 		QueryContext(ctx, GetDB().db, &dbConfig)
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, qrm.ErrNoRows) {
 		return appmodel.Configuration{}, ErrNotFound
 	} else if err != nil {
 		return appmodel.Configuration{}, err
@@ -238,7 +239,7 @@ func GetAssetId(ctx context.Context, config appmodel.Configuration, projectID, g
 			Asset.GlobalAssetID.EQ(String(gai))),
 	)
 	err := stmt.QueryContext(ctx, GetDB().db, &dest)
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, qrm.ErrNoRows) {
 		return nil, ErrNotFound
 	} else if err != nil {
 		return nil, fmt.Errorf("getting asset ID: %v", err)
@@ -261,7 +262,7 @@ func GetAssetById(assetId int32) (appmodel.Asset, error) {
 	).WHERE(
 		Asset.ID.EQ(Int32(assetId)),
 	).Query(GetDB().db, &asset)
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, qrm.ErrNoRows) {
 		return appmodel.Asset{}, ErrNotFound
 	} else if err != nil {
 		return appmodel.Asset{}, fmt.Errorf("fetching asset %v: %v", assetId, err)

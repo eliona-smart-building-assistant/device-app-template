@@ -296,6 +296,7 @@ components:
         regex:
           type: string
           example: "^first_floor_.*$"
+
     Version:
       type: object
       properties:
