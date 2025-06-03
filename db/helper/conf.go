@@ -102,7 +102,7 @@ func UpsertConfig(ctx context.Context, config appmodel.Configuration) (appmodel.
 	if config.Id != 0 {
 		// If ID is provided, include it in the INSERT
 		columns := append(commonColumns, Configuration.ID)
-		values := append([]interface{}{config.Id}, commonValues...)
+		values := append(commonValues, config.Id)
 
 		stmt = Configuration.INSERT(columns).VALUES(values[0], values[1:]...).ON_CONFLICT(
 			Configuration.ID,
@@ -125,8 +125,7 @@ func UpsertConfig(ctx context.Context, config appmodel.Configuration) (appmodel.
 	stmt = stmt.RETURNING(Configuration.AllColumns)
 
 	var updatedConfig model.Configuration
-	err = stmt.QueryContext(ctx, GetDB().db, &updatedConfig)
-	if err != nil {
+	if err := stmt.QueryContext(ctx, GetDB().db, &updatedConfig); err != nil {
 		return appmodel.Configuration{}, err
 	}
 
